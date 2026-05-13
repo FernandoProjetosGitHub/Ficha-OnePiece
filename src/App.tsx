@@ -1,9 +1,50 @@
 import { useMemo, useState } from 'react'
-import { Anchor, BookOpen, ChevronRight, Dice6, Download, HeartPulse, Shield, Sparkles, Swords, UserRound } from 'lucide-react'
+import {
+  Anchor,
+  BookOpen,
+  CheckCircle2,
+  ChevronRight,
+  Dice6,
+  HeartPulse,
+  Image as ImageIcon,
+  Lock,
+  Minus,
+  Moon,
+  PackageCheck,
+  Plus,
+  Shield,
+  Sparkles,
+  Sun,
+  Swords,
+  Trash2,
+  Unlock,
+  UserRound,
+} from 'lucide-react'
 import { DetailsCard } from './components/DetailsCard'
-import { Field, SelectField, TextAreaField } from './components/Field'
-import { attributes, basicAbilities, combatStyles, professions, skills, species, type AttributeKey } from './data/rules'
-import { abilityModifier, attackBonus, carryingCapacity, formatModifier, powerPoints, proficiencyBonus, resistanceClass, skillTotal, suggestedHitPoints, techniqueDifficulty } from './utils/calculations'
+import { Field, TextAreaField } from './components/Field'
+import { MultiOptionButtons, OptionButtons } from './components/OptionButtons'
+import {
+  attributes,
+  basicAbilities,
+  combatStyles,
+  equipmentItems,
+  professions,
+  skills,
+  species,
+  type AttributeKey,
+} from './data/rules'
+import {
+  abilityModifier,
+  attackBonus,
+  carryingCapacity,
+  formatModifier,
+  powerPoints,
+  proficiencyBonus,
+  resistanceClass,
+  skillTotal,
+  suggestedHitPoints,
+  techniqueDifficulty,
+} from './utils/calculations'
 import './App.css'
 
 const defaultAttributes: Record<AttributeKey, number> = {
@@ -15,6 +56,11 @@ const defaultAttributes: Record<AttributeKey, number> = {
   presenca: 8,
 }
 
+type InventoryEntry = {
+  itemName: string
+  quantity: number
+}
+
 type Sheet = {
   name: string
   epithet: string
@@ -23,10 +69,12 @@ type Sheet = {
   dream: string
   path: string
   background: string
+  portraitUrl: string
   level: number
   xp: number
   speciesName: string
   variant: string
+  variantNotes: string
   styleName: string
   primary: AttributeKey
   professionName: string
@@ -42,7 +90,18 @@ type Sheet = {
   abilities: string
   techniques: string
   inventory: string
+  inventoryEntries: InventoryEntry[]
+  itemCategory: string
   notes: string
+}
+
+type Theme = 'light' | 'dark'
+
+type Confirmation = {
+  title: string
+  body: string
+  confirmLabel: string
+  onConfirm: () => void
 }
 
 const initialSheet: Sheet = {
@@ -53,10 +112,12 @@ const initialSheet: Sheet = {
   dream: 'Encontrar uma rota que ninguém conseguiu registrar',
   path: 'Liberdade pela descoberta',
   background: 'Aprendiz de navegador que deixou o porto antes de escolher um lado',
+  portraitUrl: '',
   level: 1,
   xp: 0,
   speciesName: 'Humanos',
   variant: 'Humanos Comuns',
+  variantNotes: '',
   styleName: 'Lutador',
   primary: 'forca',
   professionName: 'Navegador',
@@ -72,11 +133,22 @@ const initialSheet: Sheet = {
   abilities: '',
   techniques: '',
   inventory: 'Mochila, cantil, roupas de viagem, anotações de rota e Bellys iniciais.',
+  inventoryEntries: [
+    { itemName: 'Mochila Pequena', quantity: 1 },
+    { itemName: 'Cantil', quantity: 1 },
+    { itemName: 'Corda', quantity: 1 },
+  ],
+  itemCategory: 'Equipamento',
   notes: '',
 }
 
 function App() {
   const [sheet, setSheet] = useState<Sheet>(initialSheet)
+  const [theme, setTheme] = useState<Theme>('light')
+  const [coverState, setCoverState] = useState<'closed' | 'opening' | 'opened'>('closed')
+  const [selectionsLocked, setSelectionsLocked] = useState(false)
+  const [confirmation, setConfirmation] = useState<Confirmation | null>(null)
+  const [notice, setNotice] = useState('Ficha pronta para edição.')
 
   const selectedSpecies = useMemo(
     () => species.find((item) => item.name === sheet.speciesName) ?? species[0],
@@ -100,6 +172,12 @@ function App() {
   const attack = attackBonus(level, sheet.attributes, sheet.primary)
   const carry = carryingCapacity(sheet.attributes.forca)
   const passivePerception = 10 + skillTotal('vontade', sheet.attributes, sheet.proficientSkills.includes('Percepção'), level)
+  const itemCategories = Array.from(new Set(equipmentItems.map((item) => item.category)))
+  const filteredItems = equipmentItems.filter((item) => item.category === sheet.itemCategory)
+  const registeredSlots = sheet.inventoryEntries.reduce((total, entry) => {
+    const item = equipmentItems.find((candidate) => candidate.name === entry.itemName)
+    return total + (item?.load ?? 1) * entry.quantity
+  }, 0)
 
   function updateSheet<Key extends keyof Sheet>(key: Key, value: Sheet[Key]) {
     setSheet((current) => ({ ...current, [key]: value }))
@@ -113,6 +191,7 @@ function App() {
   }
 
   function toggleSkill(skillName: string) {
+    if (selectionsLocked) return
     setSheet((current) => {
       const active = current.proficientSkills.includes(skillName)
       return {
@@ -122,10 +201,121 @@ function App() {
           : [...current.proficientSkills, skillName],
       }
     })
+    setNotice('Perícias atualizadas.')
+  }
+
+  function requestLockToggle() {
+    const willLock = !selectionsLocked
+    setConfirmation({
+      title: willLock ? 'Travar escolhas?' : 'Destravar escolhas?',
+      body: willLock
+        ? 'Espécie, estilo, profissão, perícias, defesa e itens selecionados ficarão protegidos contra mudanças acidentais.'
+        : 'As escolhas estruturais voltarão a aceitar edição, remoção e desseleção.',
+      confirmLabel: willLock ? 'Travar ficha' : 'Destravar ficha',
+      onConfirm: () => {
+        setSelectionsLocked(willLock)
+        setNotice(willLock ? 'Escolhas travadas.' : 'Escolhas destravadas.')
+      },
+    })
+  }
+
+  function confirmAction() {
+    confirmation?.onConfirm()
+    setConfirmation(null)
+  }
+
+  function setSpecies(value: string) {
+    const nextSpecies = species.find((item) => item.name === value) ?? species[0]
+    setSheet((current) => ({
+      ...current,
+      speciesName: nextSpecies.name,
+      variant: nextSpecies.variants[0] ?? '',
+    }))
+    setNotice(`Espécie definida: ${nextSpecies.name}.`)
+  }
+
+  function setStyle(value: string) {
+    const style = combatStyles.find((item) => item.name === value) ?? combatStyles[0]
+    setSheet((current) => ({ ...current, styleName: style.name, primary: style.primary[0] }))
+    setNotice(`Estilo definido: ${style.name}.`)
+  }
+
+  function addItem(itemName: string) {
+    if (selectionsLocked) return
+    setSheet((current) => {
+      const existing = current.inventoryEntries.find((entry) => entry.itemName === itemName)
+      return {
+        ...current,
+        inventoryEntries: existing
+          ? current.inventoryEntries.map((entry) =>
+              entry.itemName === itemName ? { ...entry, quantity: entry.quantity + 1 } : entry,
+            )
+          : [...current.inventoryEntries, { itemName, quantity: 1 }],
+      }
+    })
+    setNotice(`${itemName} adicionado ao inventário.`)
+  }
+
+  function changeItemQuantity(itemName: string, delta: number) {
+    if (selectionsLocked) return
+    setSheet((current) => ({
+      ...current,
+      inventoryEntries: current.inventoryEntries
+        .map((entry) =>
+          entry.itemName === itemName
+            ? { ...entry, quantity: Math.max(0, entry.quantity + delta) }
+            : entry,
+        )
+        .filter((entry) => entry.quantity > 0),
+    }))
+  }
+
+  function removeItem(itemName: string) {
+    if (selectionsLocked) return
+    setSheet((current) => ({
+      ...current,
+      inventoryEntries: current.inventoryEntries.filter((entry) => entry.itemName !== itemName),
+    }))
+    setNotice(`${itemName} removido.`)
+  }
+
+  function openCover() {
+    if (coverState !== 'closed') return
+    setCoverState('opening')
+    window.setTimeout(() => setCoverState('opened'), 820)
   }
 
   return (
-    <main className="app">
+    <main className="app" data-theme={theme}>
+      {coverState !== 'opened' && (
+        <section className={`cover-stage ${coverState}`} aria-label="Capa da ficha">
+          <button className="book-cover" onClick={openCover} type="button">
+            <span className="cover-binding" aria-hidden="true" />
+            <span className="cover-seal">OP RPG</span>
+            <span className="cover-map-lines" aria-hidden="true" />
+            <span className="cover-title">Ficha do Jogador</span>
+            <span className="cover-subtitle">Registro de aventura, técnicas e tesouros</span>
+            <span className="cover-compass" aria-hidden="true">
+              <Anchor size={44} />
+            </span>
+            <span className="cover-action">Clique para abrir</span>
+          </button>
+        </section>
+      )}
+
+      {coverState === 'opened' && (
+        <div className="floating-actions" aria-label="Controles da ficha">
+          <button className="round-action" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} type="button">
+            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+            <span>{theme === 'light' ? 'Tema escuro' : 'Tema claro'}</span>
+          </button>
+          <button className="round-action lock-action" onClick={requestLockToggle} type="button">
+            {selectionsLocked ? <Lock size={20} /> : <Unlock size={20} />}
+            <span>{selectionsLocked ? 'Destravar' : 'Travar'}</span>
+          </button>
+        </div>
+      )}
+
       <header className="hero">
         <div className="hero-copy">
           <span className="overline"><Anchor size={16} /> Registro de Aventureiro</span>
@@ -136,11 +326,27 @@ function App() {
           </p>
         </div>
         <div className="hero-card">
+          <div className="portrait-frame">
+            {sheet.portraitUrl ? (
+              <img alt={`Imagem de ${sheet.name}`} src={sheet.portraitUrl} />
+            ) : (
+              <div className="portrait-empty">
+                <ImageIcon size={32} />
+                <span>Imagem, GIF ou WebP</span>
+              </div>
+            )}
+          </div>
           <span>{sheet.epithet}</span>
           <strong>{sheet.name || 'Personagem sem nome'}</strong>
           <small>{selectedSpecies.name} · {selectedStyle.name} · nível {level}</small>
         </div>
       </header>
+
+      <section className="notice-bar" aria-live="polite">
+        <CheckCircle2 size={18} />
+        <span>{notice}</span>
+        {selectionsLocked && <strong>Seleções travadas</strong>}
+      </section>
 
       <section className="quick-stats" aria-label="Resumo da ficha">
         <Stat icon={<HeartPulse />} label="PV sugerido" value={suggestedHp} hint={`Atual ${sheet.currentHp}`} />
@@ -158,20 +364,71 @@ function App() {
             <Field label="Origem" value={sheet.origin} onChange={(event) => updateSheet('origin', event.target.value)} />
             <Field label="Sonho" value={sheet.dream} onChange={(event) => updateSheet('dream', event.target.value)} />
             <Field label="Caminho" value={sheet.path} onChange={(event) => updateSheet('path', event.target.value)} />
+            <Field label="URL da imagem/GIF" value={sheet.portraitUrl} onChange={(event) => updateSheet('portraitUrl', event.target.value)} placeholder="https://...gif, .png, .webp ou .jpg" />
             <TextAreaField label="Antecedente e história" value={sheet.background} onChange={(event) => updateSheet('background', event.target.value)} />
           </div>
         </Panel>
 
         <Panel title="Criação" icon={<BookOpen />}>
+          <OptionButtons
+            disabled={selectionsLocked}
+            label="Espécie"
+            onChange={setSpecies}
+            options={species.map((item) => ({ value: item.name, label: item.name, detail: `${item.hpBase} PV base` }))}
+            value={sheet.speciesName}
+          />
+
+          <OptionButtons
+            disabled={selectionsLocked}
+            label="Variante, ancestralidade ou traço"
+            onChange={(value) => {
+              updateSheet('variant', value)
+              setNotice(`Variação definida: ${value}.`)
+            }}
+            options={selectedSpecies.variants.map((variant) => {
+              const [label, detail] = variant.split(': ')
+              return { value: variant, label, detail }
+            })}
+            value={sheet.variant}
+          />
+
           <div className="form-grid">
-            <SelectField label="Espécie" value={sheet.speciesName} options={species.map((item) => item.name)} onChange={(event) => updateSheet('speciesName', event.target.value)} />
-            <Field label="Variante / ancestralidade" value={sheet.variant} onChange={(event) => updateSheet('variant', event.target.value)} />
-            <SelectField label="Estilo de combate" value={sheet.styleName} options={combatStyles.map((item) => item.name)} onChange={(event) => {
-              const style = combatStyles.find((item) => item.name === event.target.value) ?? combatStyles[0]
-              setSheet((current) => ({ ...current, styleName: style.name, primary: style.primary[0] }))
-            }} />
-            <SelectField label="Atributo primário" value={sheet.primary} options={selectedStyle.primary.map((key) => ({ value: key, label: attributes[key] }))} onChange={(event) => updateSheet('primary', event.target.value as AttributeKey)} />
-            <SelectField label="Profissão" value={sheet.professionName} options={professions.map((item) => item.name)} onChange={(event) => updateSheet('professionName', event.target.value)} />
+            <TextAreaField
+              label="Complemento de variante / ancestralidade"
+              value={sheet.variantNotes}
+              onChange={(event) => updateSheet('variantNotes', event.target.value)}
+              placeholder="Use para animal ancestral, falha humana, duas espécies de mestiço ou aprovação do Narrador."
+            />
+          </div>
+
+          <OptionButtons
+            disabled={selectionsLocked}
+            label="Estilo de combate"
+            onChange={setStyle}
+            options={combatStyles.map((item) => ({ value: item.name, label: item.name, detail: `${item.category} · d${item.hitDie}` }))}
+            value={sheet.styleName}
+          />
+
+          <OptionButtons
+            disabled={selectionsLocked}
+            label="Atributo primário"
+            onChange={(value) => updateSheet('primary', value as AttributeKey)}
+            options={selectedStyle.primary.map((key) => ({ value: key, label: attributes[key] }))}
+            value={sheet.primary}
+          />
+
+          <OptionButtons
+            disabled={selectionsLocked}
+            label="Profissão"
+            onChange={(value) => {
+              updateSheet('professionName', value)
+              setNotice(`Profissão definida: ${value}.`)
+            }}
+            options={professions.map((item) => ({ value: item.name, label: item.name, detail: item.specialSkill }))}
+            value={sheet.professionName}
+          />
+
+          <div className="form-grid">
             <Field label="Nível" type="number" min={1} max={20} value={level} onChange={(event) => updateSheet('level', Number(event.target.value))} />
             <Field label="Experiência" type="number" min={0} value={sheet.xp} onChange={(event) => updateSheet('xp', Number(event.target.value))} />
           </div>
@@ -233,8 +490,18 @@ function App() {
             <Field label="PV temporário" type="number" value={sheet.temporaryHp} onChange={(event) => updateSheet('temporaryHp', Number(event.target.value))} />
             <Field label="PP atual" type="number" value={sheet.currentPp} onChange={(event) => updateSheet('currentPp', Number(event.target.value))} />
             <Field label="Exaustão" type="number" min={0} max={6} value={sheet.exhaustion} onChange={(event) => updateSheet('exhaustion', Number(event.target.value))} />
-            <SelectField label="Defesa" value={sheet.defenseMode} options={[{ value: 'normal', label: 'Normal' }, { value: 'warriorBody', label: 'Corpo de Guerreiro' }]} onChange={(event) => updateSheet('defenseMode', event.target.value as Sheet['defenseMode'])} />
           </div>
+
+          <OptionButtons
+            disabled={selectionsLocked}
+            label="Defesa"
+            onChange={(value) => updateSheet('defenseMode', value as Sheet['defenseMode'])}
+            options={[
+              { value: 'normal', label: 'Normal', detail: '10 + DES' },
+              { value: 'warriorBody', label: 'Corpo de Guerreiro', detail: 'HB defensiva' },
+            ]}
+            value={sheet.defenseMode}
+          />
 
           <div className="derived-grid">
             <MiniCalc label="Ataque favorito" value={formatModifier(attack)} />
@@ -258,15 +525,19 @@ function App() {
         </Panel>
 
         <Panel title="Perícias" icon={<Dice6 />}>
+          <MultiOptionButtons
+            disabled={selectionsLocked}
+            label="Proficiências marcadas"
+            onToggle={toggleSkill}
+            options={skills.map((skill) => ({ value: skill.name, label: skill.name, detail: attributes[skill.attribute] }))}
+            values={sheet.proficientSkills}
+          />
           <div className="skills-list">
             {skills.map((skill) => {
               const proficient = sheet.proficientSkills.includes(skill.name)
               return (
                 <article className="skill-row" key={skill.name}>
-                  <label>
-                    <input type="checkbox" checked={proficient} onChange={() => toggleSkill(skill.name)} />
-                    <span>{skill.name}</span>
-                  </label>
+                  <span>{skill.name}</span>
                   <strong>{formatModifier(skillTotal(skill.attribute, sheet.attributes, proficient, level))}</strong>
                   <details>
                     <summary>Detalhes</summary>
@@ -308,19 +579,83 @@ function App() {
           <TextAreaField label="Akuma no Mi / poder sobrenatural" value={sheet.akuma} onChange={(event) => updateSheet('akuma', event.target.value)} placeholder="Tipo, nome, traços, técnicas criadas, limitações e fraquezas." />
         </Panel>
 
-        <Panel title="Inventário e Biblioteca" icon={<Download />}>
-          <TextAreaField label="Inventário, Bellys e equipamentos" value={sheet.inventory} onChange={(event) => updateSheet('inventory', event.target.value)} />
+        <Panel title="Inventário e Biblioteca" icon={<PackageCheck />}>
+          <div className="inventory-summary">
+            <MiniCalc label="Slots auxiliares" value={registeredSlots.toFixed(1)} />
+            <MiniCalc label="Capacidade pessoal" value={`${carry.load} kg`} />
+          </div>
+
+          <OptionButtons
+            disabled={selectionsLocked}
+            label="Categoria de item"
+            onChange={(value) => updateSheet('itemCategory', value)}
+            options={itemCategories.map((category) => ({ value: category, label: category }))}
+            value={sheet.itemCategory}
+          />
+
+          <div className="item-picker">
+            {filteredItems.map((item) => (
+              <article className="item-card" key={item.name}>
+                <div>
+                  <strong>{item.name}</strong>
+                  <span>{item.rarity} · {item.cost}</span>
+                  <p>{item.detail}</p>
+                  <small>{item.capacity ? `Capacidade: ${item.capacity}` : `Slots auxiliares: ${item.load}`}</small>
+                </div>
+                <button disabled={selectionsLocked} onClick={() => addItem(item.name)} type="button">
+                  <Plus size={18} />Adicionar
+                </button>
+              </article>
+            ))}
+          </div>
+
+          <DetailsCard title="Itens selecionados" eyebrow="Pode remover quando destravado" open>
+            <div className="inventory-list">
+              {sheet.inventoryEntries.length === 0 && <p className="empty-copy">Nenhum item selecionado.</p>}
+              {sheet.inventoryEntries.map((entry) => {
+                const item = equipmentItems.find((candidate) => candidate.name === entry.itemName)
+                return (
+                  <article className="inventory-entry" key={entry.itemName}>
+                    <div>
+                      <strong>{entry.itemName}</strong>
+                      <span>{item?.category} · qtd. {entry.quantity}</span>
+                    </div>
+                    <div className="quantity-actions">
+                      <button disabled={selectionsLocked} onClick={() => changeItemQuantity(entry.itemName, -1)} type="button"><Minus size={16} /></button>
+                      <button disabled={selectionsLocked} onClick={() => changeItemQuantity(entry.itemName, 1)} type="button"><Plus size={16} /></button>
+                      <button disabled={selectionsLocked} onClick={() => removeItem(entry.itemName)} type="button"><Trash2 size={16} /></button>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          </DetailsCard>
+
+          <TextAreaField label="Inventário livre, Bellys e equipamentos narrativos" value={sheet.inventory} onChange={(event) => updateSheet('inventory', event.target.value)} />
           <TextAreaField label="Notas da mesa" value={sheet.notes} onChange={(event) => updateSheet('notes', event.target.value)} />
 
           <DetailsCard title="Referências dos PDFs usados" eyebrow="Arquivos locais">
             <InfoList items={[
-              'OP RPG - Livro do Jogador 1.5.7.pdf: criação, espécies, estilos principais, profissões, atributos, perícias, técnicas, condições e aventura.',
+              'OP RPG - Livro do Jogador 1.5.7.pdf: criação, espécies, estilos principais, profissões, atributos, perícias, técnicas, condições, equipamentos e aventura.',
               'Estilos de Combate Exclusivos - Revisada (1).pdf: Black Leg, Esgrimista, Herói, Solfista e Usuário Ínsito.',
-              'A ficha evita copiar páginas inteiras e transforma as regras em campos editáveis, cálculos e detalhes expansíveis.',
+              'A ficha usa capacidade em kg quando o PDF informa recipientes, montarias ou veículos. Itens sem peso explícito usam slots auxiliares apenas para organização.',
             ]} />
           </DetailsCard>
         </Panel>
       </section>
+
+      {confirmation && (
+        <div className="confirm-backdrop" role="presentation">
+          <section aria-modal="true" className="confirm-dialog" role="dialog">
+            <h2>{confirmation.title}</h2>
+            <p>{confirmation.body}</p>
+            <div>
+              <button className="ghost-button" onClick={() => setConfirmation(null)} type="button">Cancelar</button>
+              <button className="primary-button" onClick={confirmAction} type="button">{confirmation.confirmLabel}</button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   )
 }

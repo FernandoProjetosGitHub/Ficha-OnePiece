@@ -44,6 +44,16 @@ export type Profession = {
   details: string[]
 }
 
+export type EquipmentItem = {
+  name: string
+  category: 'Comida e hospedagem' | 'Ferramenta' | 'Equipamento' | 'Utilitário' | 'Arma' | 'Munição' | 'Montaria e veículo'
+  rarity: 'Comum' | 'Incomum' | 'Raro' | 'Mercado Negro' | 'Variável'
+  cost: string
+  load: number
+  capacity?: string
+  detail: string
+}
+
 export const attributes: Record<AttributeKey, string> = {
   forca: 'Força',
   destreza: 'Destreza',
@@ -592,4 +602,48 @@ export const xpTable = [
   { level: 18, xp: 265000, proficiency: 6, stage: 'Fama Mundial' },
   { level: 19, xp: 305000, proficiency: 6, stage: 'Fama Mundial' },
   { level: 20, xp: 355000, proficiency: 6, stage: 'Fama Mundial' },
+]
+
+export const equipmentItems: EquipmentItem[] = [
+  { name: 'Mochila Pequena', category: 'Equipamento', rarity: 'Comum', cost: '฿ 10.000', load: 1, capacity: '30 kg', detail: 'Recipiente com limite de 30 kg de equipamentos.' },
+  { name: 'Mochila Média', category: 'Equipamento', rarity: 'Comum', cost: '฿ 15.000', load: 1, capacity: '60 kg', detail: 'Recipiente com limite de 60 kg de equipamentos.' },
+  { name: 'Mochila Grande', category: 'Equipamento', rarity: 'Incomum', cost: '฿ 20.000', load: 1, capacity: '100 kg', detail: 'Recipiente com limite de 100 kg de equipamentos.' },
+  { name: 'Algibeira', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 1, capacity: '3 kg', detail: 'Recipiente pequeno com capacidade de 3 kg de equipamentos.' },
+  { name: 'Saco', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 1, capacity: '10 kg', detail: 'Recipiente com capacidade de 10 kg de equipamentos.' },
+  { name: 'Cesto', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 1, capacity: '20 kg', detail: 'Recipiente com capacidade de 20 kg de equipamentos.' },
+  { name: 'Baú', category: 'Utilitário', rarity: 'Comum', cost: '฿ 12.000', load: 1, capacity: '150 kg', detail: 'Guarda objetos, valores e dinheiro; recipiente com capacidade de 150 kg.' },
+  { name: 'Cantil', category: 'Equipamento', rarity: 'Comum', cost: '฿ 2.000', load: 1, detail: 'Garrafa de viagem com 2 litros de capacidade.' },
+  { name: 'Corda', category: 'Equipamento', rarity: 'Comum', cost: '฿ 1.500', load: 1, detail: 'Corda resistente de 15 metros para usos variados.' },
+  { name: 'Lanterna', category: 'Equipamento', rarity: 'Comum', cost: '฿ 800', load: 1, detail: 'Ilumina um cone de 4 metros à frente.' },
+  { name: 'Kit de Escalada', category: 'Ferramenta', rarity: 'Incomum', cost: '฿ 30.000', load: 1, detail: 'Permite ancorar-se para limitar quedas durante escaladas.' },
+  { name: 'Kit Médico', category: 'Ferramenta', rarity: 'Incomum', cost: '฿ 15.000', load: 1, detail: 'Suprimentos médicos para cirurgia, tratamento e prevenção.' },
+  { name: 'Kit de Primeiros Socorros', category: 'Ferramenta', rarity: 'Comum', cost: '฿ 10.000', load: 1, detail: 'Uso único; pode retornar personagem desacordado a 1 PV.' },
+  { name: 'Kit para Abrir Cadeado', category: 'Ferramenta', rarity: 'Raro', cost: '฿ 15.000', load: 1, detail: 'Conjunto de dez usos para abrir cadeados e fechaduras comuns.' },
+  { name: 'Ferramentas de Profissão - Amador', category: 'Ferramenta', rarity: 'Comum', cost: '฿ 20.000', load: 1, detail: 'Conjunto necessário para executar uma profissão em graduação amador.' },
+  { name: 'Ferramentas de Profissão - Profissional', category: 'Ferramenta', rarity: 'Comum', cost: '฿ 40.000', load: 1, detail: 'Conjunto necessário para executar uma profissão em graduação profissional.' },
+  { name: 'Ferramentas de Profissão - Especialista', category: 'Ferramenta', rarity: 'Incomum', cost: '฿ 60.000', load: 1, detail: 'Conjunto necessário para executar uma profissão em graduação especialista.' },
+  { name: 'Ferramentas de Profissão - Mestre', category: 'Ferramenta', rarity: 'Raro', cost: '฿ 80.000', load: 1, detail: 'Conjunto necessário para executar uma profissão em graduação mestre.' },
+  { name: 'Equipamento de Mergulho', category: 'Equipamento', rarity: 'Raro', cost: 'Roupa ฿ 15.000; tanque ฿ 35.000; bomba ฿ 50.000', load: 1, detail: 'Permite explorar mar aberto com tanque de oxigênio de 1 hora.' },
+  { name: 'Den-Den Mushi Comum', category: 'Utilitário', rarity: 'Comum', cost: '฿ 50.000', load: 1, detail: 'Dispositivo de comunicação com boa área de sinal.' },
+  { name: 'Den-Den Mushi Bebê', category: 'Utilitário', rarity: 'Raro', cost: '฿ 50.000', load: 1, detail: 'Versão portátil, limitada à mesma área ou ilha.' },
+  { name: 'Log Pose', category: 'Utilitário', rarity: 'Comum', cost: '฿ 50.000', load: 1, detail: 'Item de navegação essencial para rotas marítimas.' },
+  { name: 'Eternal Pose', category: 'Utilitário', rarity: 'Raro', cost: '฿ 300.000', load: 1, detail: 'Sempre aponta para uma única ilha.' },
+  { name: 'Adaga/Kunai', category: 'Arma', rarity: 'Comum', cost: '฿ 20.000', load: 1, detail: 'Acuidade e arremesso 6/15 m; dano 1d4 cortante ou perfurante.' },
+  { name: 'Katana', category: 'Arma', rarity: 'Comum', cost: '฿ 70.000', load: 1, detail: 'Acuidade; dano 1d6 cortante.' },
+  { name: 'Rapieira', category: 'Arma', rarity: 'Comum', cost: '฿ 70.000', load: 1, detail: 'Acuidade; dano 1d6 cortante ou perfurante.' },
+  { name: 'Machado Grande', category: 'Arma', rarity: 'Comum', cost: '฿ 90.000', load: 1, detail: 'Alcance, duas mãos e pesada; dano 1d12 cortante.' },
+  { name: 'Pistola', category: 'Arma', rarity: 'Comum', cost: '฿ 70.000', load: 1, detail: 'Distância 9/15 m e munição; cada disparo gasta uma munição.' },
+  { name: 'Mosquete', category: 'Arma', rarity: 'Comum', cost: '฿ 100.000', load: 1, detail: 'Distância 18/24 m, munição e duas mãos.' },
+  { name: 'Escopeta', category: 'Arma', rarity: 'Comum', cost: '฿ 150.000', load: 1, detail: 'Cone de 3 m, duas mãos, munição e recarga; gasta 10 munições esféricas.' },
+  { name: 'Escudo de Ferro', category: 'Arma', rarity: 'Comum', cost: '฿ 50.000', load: 1, detail: 'Adiciona +2 na CR; suporta dano antes de quebrar.' },
+  { name: 'Tridente', category: 'Arma', rarity: 'Comum', cost: '฿ 70.000', load: 1, detail: 'Alcance e duas mãos; dano 1d10 perfurante ou 1d6 contundente.' },
+  { name: 'Kanabo/Tacape', category: 'Arma', rarity: 'Comum', cost: '฿ 60.000', load: 1, detail: 'Arma de cerco, duas mãos e pesada; dano marcial contundente ou perfurante.' },
+  { name: 'Munição Esférica', category: 'Munição', rarity: 'Comum', cost: '฿ 500/unidade', load: 0.1, detail: 'Munição simples de armas de disparo; dano 1d6 contundente.' },
+  { name: 'Munição Perfurante', category: 'Munição', rarity: 'Comum', cost: '฿ 1.000/unidade', load: 0.1, detail: 'Munição simples de armas de disparo; dano 1d8 perfurante.' },
+  { name: 'Flecha', category: 'Munição', rarity: 'Comum', cost: '฿ 500/unidade', load: 0.1, detail: 'Munição de arco; dano 1d6 perfurante.' },
+  { name: 'Dinamite', category: 'Munição', rarity: 'Comum', cost: '฿ 25.000', load: 1, detail: 'Arremesso 6 m; explosão CD 15 em área, escalando com bananas adicionais.' },
+  { name: 'Bote', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 160.000', load: 1, capacity: '210 kg', detail: 'Veículo aquático; deslocamento por correnteza; capacidade 210 kg.' },
+  { name: 'Barco a Remo', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 240.000', load: 1, capacity: '220 kg', detail: 'Correnteza + 2 nós; capacidade 220 kg.' },
+  { name: 'Cavalo de Montaria', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 2.000.000', load: 1, capacity: '220 kg', detail: 'Deslocamento 18 m; capacidade de carga 220 kg.' },
+  { name: 'Burro ou Mula', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 300.000', load: 1, capacity: '210 kg', detail: 'Deslocamento 12 m; capacidade de carga 210 kg.' },
 ]

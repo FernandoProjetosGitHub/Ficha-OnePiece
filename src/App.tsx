@@ -146,7 +146,7 @@ function App() {
   // Estado unico da ficha: facilita salvar, exportar ou sincronizar tudo depois.
   const [sheet, setSheet] = useState<Sheet>(initialSheet)
   const [theme, setTheme] = useState<Theme>('light')
-  const [coverState, setCoverState] = useState<'closed' | 'opening' | 'opened'>('closed')
+  const [coverOpened, setCoverOpened] = useState(false)
   const [selectionsLocked, setSelectionsLocked] = useState(false)
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null)
   const [notice, setNotice] = useState('Ficha pronta para edição.')
@@ -273,18 +273,11 @@ function App() {
     setNotice(`${itemName} removido.`)
   }
 
-  function openCover() {
-    if (coverState !== 'closed') return
-    setCoverState('opening')
-    window.setTimeout(() => setCoverState('opened'), 1080)
-  }
-
   return (
     <main className="app" data-theme={theme}>
-      {coverState !== 'opened' && (
-        <section className={`cover-stage ${coverState}`} aria-label="Capa da ficha">
-          <button className="book-cover" onClick={openCover} type="button">
-            <span className="cover-binding" aria-hidden="true" />
+      {!coverOpened && (
+        <section className="cover-stage" aria-label="Capa da ficha">
+          <button className="cover-link" onClick={() => setCoverOpened(true)} type="button">
             <span className="cover-seal">OP RPG</span>
             <span className="cover-map-lines" aria-hidden="true" />
             <span className="cover-title">Ficha do Jogador</span>
@@ -292,12 +285,12 @@ function App() {
             <span className="cover-compass" aria-hidden="true">
               <Anchor size={44} />
             </span>
-            <span className="cover-action">Clique para abrir</span>
+            <span className="cover-action">Abrir aplicativo</span>
           </button>
         </section>
       )}
 
-      {coverState === 'opened' && (
+      {coverOpened && (
         <div className="floating-actions" aria-label="Controles da ficha">
           <button className="round-action" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} type="button">
             {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}

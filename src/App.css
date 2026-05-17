@@ -285,6 +285,9 @@ select:disabled {
 
 .hero-tags span {
   max-width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 7px 10px;
   border: 1px solid rgba(255, 253, 245, 0.22);
   border-radius: 999px;
@@ -292,6 +295,25 @@ select:disabled {
   color: #fffdf5;
   font-size: 0.78rem;
   font-weight: 900;
+}
+
+.hero-tags svg {
+  width: 17px;
+  height: 17px;
+  color: #ffd166;
+}
+
+.hero-symbols {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  color: rgba(255, 248, 232, 0.32);
+}
+
+.hero-symbols svg {
+  width: 34px;
+  height: 34px;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.22));
 }
 
 .hero-card {
@@ -446,6 +468,9 @@ select:disabled {
 
 .sheet-nav a {
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 10px;
   border: 1px solid rgba(8, 126, 139, 0.14);
   border-radius: 8px;
@@ -454,6 +479,12 @@ select:disabled {
   font-size: 0.8rem;
   font-weight: 900;
   text-decoration: none;
+}
+
+.sheet-nav svg {
+  width: 17px;
+  height: 17px;
+  color: var(--red);
 }
 
 .stat,

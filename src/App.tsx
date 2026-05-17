@@ -1,23 +1,32 @@
 ﻿import {
   Anchor,
-  BookOpen,
   CheckCircle2,
-  Dice6,
-  HeartPulse,
   Image as ImageIcon,
   Lock,
   Minus,
   Moon,
-  PackageCheck,
   Plus,
-  Shield,
-  Sparkles,
   Sun,
-  Swords,
   Trash2,
   Unlock,
-  UserRound,
 } from 'lucide-react'
+import {
+  GiChest,
+  GiCompass,
+  GiDiceTarget,
+  GiDiceTwentyFacesTwenty,
+  GiEnergySword,
+  GiEnergyTank,
+  GiHeartBeats,
+  GiSailboat,
+  GiScrollQuill,
+  GiShield,
+  GiShipWheel,
+  GiSpyglass,
+  GiSwordsPower,
+  GiTreasureMap,
+  GiWaves,
+} from 'react-icons/gi'
 import { ChoiceSelect, MultiChoiceSelect } from './components/ChoiceSelect'
 import { DetailsCard } from './components/DetailsCard'
 import { Field, TextAreaField } from './components/Field'
@@ -124,10 +133,16 @@ function App() {
           <h1>{sheet.name || 'Ficha online OP RPG'}</h1>
           <p>{sheet.concept || 'Personagem original pronto para navegar por aventuras, perigos e escolhas difíceis.'}</p>
           <div className="hero-tags" aria-label="Resumo do personagem">
-            <span>Nível {level}</span>
-            <span>{selectedSpecies.name}</span>
-            <span>{selectedStyle.name}</span>
-            <span>{selectedProfession.name}</span>
+            <span><GiCompass />Nível {level}</span>
+            <span><GiWaves />{selectedSpecies.name}</span>
+            <span><GiSwordsPower />{selectedStyle.name}</span>
+            <span><GiShipWheel />{selectedProfession.name}</span>
+          </div>
+          <div className="hero-symbols" aria-hidden="true">
+            <GiTreasureMap />
+            <GiSailboat />
+            <GiSpyglass />
+            <GiWaves />
           </div>
         </div>
         <div className="hero-card">
@@ -154,10 +169,10 @@ function App() {
       </section>
 
       <section className="quick-stats" aria-label="Resumo da ficha">
-        <Stat icon={<HeartPulse />} label="PV sugerido" value={suggestedHp} hint={`Atual ${sheet.currentHp}`} />
-        <Stat icon={<Sparkles />} label="PP" value={`${sheet.currentPp}/${maxPp}`} hint="2 por nível" />
-        <Stat icon={<Shield />} label="CR" value={cr} hint={sheet.defenseMode === 'warriorBody' ?'Corpo de Guerreiro' : 'Base 10 + DES'} />
-        <Stat icon={<Dice6 />} label="Prof." value={formatModifier(proficiency)} hint={`CD técnica ${techniqueCd}`} />
+        <Stat icon={<GiHeartBeats />} label="PV sugerido" value={suggestedHp} hint={`Atual ${sheet.currentHp}`} />
+        <Stat icon={<GiEnergyTank />} label="PP" value={`${sheet.currentPp}/${maxPp}`} hint="2 por nível" />
+        <Stat icon={<GiShield />} label="CR" value={cr} hint={sheet.defenseMode === 'warriorBody' ?'Corpo de Guerreiro' : 'Base 10 + DES'} />
+        <Stat icon={<GiDiceTwentyFacesTwenty />} label="Prof." value={formatModifier(proficiency)} hint={`CD técnica ${techniqueCd}`} />
       </section>
 
       <section className="resource-board" aria-label="Estado atual do personagem">
@@ -167,16 +182,16 @@ function App() {
       </section>
 
       <nav className="sheet-nav" aria-label="Navegação da ficha">
-        <a href="#identidade">Identidade</a>
-        <a href="#criacao">Criação</a>
-        <a href="#atributos">Atributos</a>
-        <a href="#pericias">Perícias</a>
-        <a href="#tecnicas">Técnicas</a>
-        <a href="#inventario">Inventário</a>
+        <a href="#identidade"><GiScrollQuill />Identidade</a>
+        <a href="#criacao"><GiCompass />Criação</a>
+        <a href="#atributos"><GiSwordsPower />Atributos</a>
+        <a href="#pericias"><GiDiceTarget />Perícias</a>
+        <a href="#tecnicas"><GiEnergySword />Técnicas</a>
+        <a href="#inventario"><GiChest />Inventário</a>
       </nav>
 
       <section className="sheet-grid">
-        <Panel id="identidade" title="Identidade" icon={<UserRound />}>
+        <Panel id="identidade" title="Identidade" icon={<GiScrollQuill />}>
           <div className="section-block">
             <h3>Apresentação</h3>
             <div className="form-grid">
@@ -202,7 +217,7 @@ function App() {
           </div>
         </Panel>
 
-        <Panel id="criacao" title="Criação" icon={<BookOpen />}>
+        <Panel id="criacao" title="Criação" icon={<GiCompass />}>
           <div className="section-block">
             <h3>Origem mecânica</h3>
             <ChoiceSelect
@@ -311,7 +326,7 @@ function App() {
           </div>
         </Panel>
 
-        <Panel id="atributos" title="Atributos e Recursos" icon={<Swords />}>
+        <Panel id="atributos" title="Atributos e Recursos" icon={<GiSwordsPower />}>
           <div className="section-block">
             <h3>Atributos base</h3>
           <div className="attribute-grid">
@@ -369,7 +384,7 @@ function App() {
           </div>
         </Panel>
 
-        <Panel id="pericias" title="Perícias" icon={<Dice6 />}>
+        <Panel id="pericias" title="Perícias" icon={<GiDiceTarget />}>
           <div className="section-block">
             <h3>Escolhas de proficiência</h3>
           <MultiChoiceSelect
@@ -412,7 +427,7 @@ function App() {
           </div>
         </Panel>
 
-        <Panel id="tecnicas" title="Habilidades e Técnicas" icon={<Sparkles />}>
+        <Panel id="tecnicas" title="Habilidades e Técnicas" icon={<GiEnergySword />}>
           <div className="section-block">
             <h3>Habilidades básicas</h3>
           <DetailsCard title="Habilidades Básicas disponíveis" eyebrow="HB gerais e categorias">
@@ -457,7 +472,7 @@ function App() {
           </div>
         </Panel>
 
-        <Panel id="inventario" title="Inventário e Biblioteca" icon={<PackageCheck />}>
+        <Panel id="inventario" title="Inventário e Biblioteca" icon={<GiChest />}>
           <div className="section-block">
             <h3>Resumo de carga</h3>
           <div className="inventory-summary">

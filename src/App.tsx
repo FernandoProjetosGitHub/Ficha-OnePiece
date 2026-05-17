@@ -447,36 +447,38 @@ function App() {
 
           <div className="section-block">
             <h3>Catálogo de itens</h3>
-          <ChoiceSelect
-            disabled={selectionsLocked}
-            label="Categoria de item"
-            onChange={(value) => updateSheet('itemCategory', value)}
-            options={itemCategories.map((category) => ({ value: category, label: category }))}
-            value={sheet.itemCategory}
-          />
+            <DetailsCard title="Abrir catálogo de itens" eyebrow={`${filteredItems.length} itens em ${sheet.itemCategory}`}>
+              <ChoiceSelect
+                disabled={selectionsLocked}
+                label="Categoria de item"
+                onChange={(value) => updateSheet('itemCategory', value)}
+                options={itemCategories.map((category) => ({ value: category, label: category }))}
+                value={sheet.itemCategory}
+              />
 
-          <div className="item-picker">
-            {filteredItems.map((item) => (
-              <article className="item-card" key={item.name}>
-                <details className="choice-detail-card">
-                  <summary>
-                    <span>{item.rarity} · {item.cost}</span>
-                    <strong>{item.name}</strong>
-                  </summary>
-                  <InfoList items={[
-                    item.detail,
-                    item.properties ? `Propriedades: ${item.properties}` : '',
-                    item.damage ? `Dano: ${item.damage}` : '',
-                    item.capacity ? `Capacidade: ${item.capacity}` : `Slots/peso registrado: ${item.load}`,
-                    ...(item.rules ?? []),
-                  ].filter(Boolean)} />
-                </details>
-                <button disabled={selectionsLocked} onClick={() => addItem(item.name)} type="button">
-                  <Plus size={18} />Adicionar
-                </button>
-              </article>
-            ))}
-          </div>
+              <div className="item-picker">
+                {filteredItems.map((item) => (
+                  <article className="item-card" key={item.name}>
+                    <details className="choice-detail-card">
+                      <summary>
+                        <span>{item.rarity} · {item.cost}</span>
+                        <strong>{item.name}</strong>
+                      </summary>
+                      <InfoList items={[
+                        item.detail,
+                        item.properties ? `Propriedades: ${item.properties}` : '',
+                        item.damage ? `Dano: ${item.damage}` : '',
+                        item.capacity ? `Capacidade: ${item.capacity}` : `Slots/peso registrado: ${item.load}`,
+                        ...(item.rules ?? []),
+                      ].filter(Boolean)} />
+                    </details>
+                    <button disabled={selectionsLocked} onClick={() => addItem(item.name)} type="button">
+                      <Plus size={18} />Adicionar
+                    </button>
+                  </article>
+                ))}
+              </div>
+            </DetailsCard>
           </div>
 
           <div className="section-block">

@@ -52,12 +52,21 @@ export type ProfessionFeature = {
 
 export type EquipmentItem = {
   name: string
-  category: 'Comida e hospedagem' | 'Ferramenta' | 'Equipamento' | 'Utilitário' | 'Arma' | 'Munição' | 'Montaria e veículo'
+  category: 'Comida e hospedagem' | 'Ferramenta' | 'Equipamento' | 'Utilitário' | 'Consumível' | 'Arma' | 'Munição' | 'Montaria e veículo'
   rarity: 'Comum' | 'Incomum' | 'Raro' | 'Mercado Negro' | 'Variável'
   cost: string
   load: number
   capacity?: string
+  properties?: string
+  damage?: string
   detail: string
+  rules?: string[]
+}
+
+export type RuleReference = {
+  name: string
+  detail: string
+  bullets?: string[]
 }
 
 export const attributes: Record<AttributeKey, string> = {
@@ -567,8 +576,8 @@ export const professions: Profession[] = [
   {
     name: 'Arqueólogo',
     specialSkill: 'História Perdida',
-    proficiencies: 'Ferramentas de Arqueólogo e perícias ligadas a pesquisa.',
-    items: 'Ferramentas de Arqueólogo e itens de estudo.',
+    proficiencies: 'Ferramentas de Arqueólogo; escolha 2 entre História, Intuição, Investigação, Percepção, Persuasão e Sobrevivência.',
+    items: 'Ferramentas de Arqueólogo, mochila pequena, lanterna, corda e tenda.',
     details: [
       { name: 'Poneglyphs', detail: 'Usa História Perdida para decifrar línguas antigas, transcrever inscrições e interpretar ruínas ou registros esquecidos.', bullets: ['O teste substitui perícias comuns quando a ação envolve exploração, tradução ou descobrimento.', 'A graduação melhora a segurança e eficiência da interpretação.'] },
       { name: 'Tesouros Perdidos', detail: 'Permite identificar e buscar tesouros antigos, incluindo dials, armas meito, equipamentos engenhados e Akuma no Mi conforme as tabelas do PDF.', bullets: ['Graduações avançadas permitem repetir ou escolher resultados em rolagens de tesouro.', 'As ferramentas incluem livros, mapas, caderno, chicote e kit de escalada conforme a graduação.'] },
@@ -577,8 +586,8 @@ export const professions: Profession[] = [
   {
     name: 'Caçador de Recompensas',
     specialSkill: 'Caça',
-    proficiencies: 'Ferramentas de Caçador de Recompensas e perícias de investigação/rastreamento.',
-    items: 'Itens de caçada e contratos.',
+    proficiencies: 'Ferramentas de Caçador de Recompensas; escolha 2 entre Furtividade, Intimidação, Investigação, Percepção, Persuasão e Sobrevivência.',
+    items: 'Ferramenta de Caçador de Recompensas e mochila pequena.',
     details: [
       { name: 'Contratos Clandestinos', detail: 'Usa contatos no Governo Mundial, Marinha ou submundo para negociar recompensas de criminosos capturados.', bullets: ['Acordos iniciais pagam parte do valor original, especialmente para alvos vivos.', 'A graduação aumenta o percentual recebido pelos contratos.'] },
       { name: 'Informações Confiáveis', detail: 'Pesquisa hábitos, rotinas, conexões, fraquezas, paradeiro e nível de ameaça de um alvo antes da caçada.', bullets: ['O tipo de alvo define CDs e intervalos para novos testes.', 'Pode exigir custo em bellys para subornos, presentes ou acesso a fontes.'] },
@@ -588,8 +597,8 @@ export const professions: Profession[] = [
   {
     name: 'Carpinteiro',
     specialSkill: 'Carpintaria',
-    proficiencies: 'Ferramentas de Carpinteiro e perícias de construção.',
-    items: 'Ferramentas de Carpinteiro.',
+    proficiencies: 'Ferramentas de Carpinteiro; escolha 2 entre Acrobacia, Atletismo, História, Investigação, Persuasão e Prestidigitação.',
+    items: 'Ferramenta de Carpinteiro e mochila pequena.',
     details: [
       { name: 'Conserto em Madeira', detail: 'Repara danos de embarcações com tempo e custo definidos pelo estado do navio, usando madeira adequada para navegação.', bullets: ['Também cobre criação de embarcações, cômodos, velas e mastros.', 'Graduações reduzem custos e podem melhorar velocidade e CR da embarcação.'] },
       { name: 'Confecção Rápida', detail: 'Com madeira disponível, cria estruturas simples em combate ou exploração, como chão, escada, parede e cobertura.', bullets: ['A cada ação ou 6 segundos constrói 1,5 m² de estrutura.', 'Cada trecho possui CR 10 e 10 PV por 1,5 m².'] },
@@ -600,8 +609,8 @@ export const professions: Profession[] = [
   {
     name: 'Combatente',
     specialSkill: 'Noção de Batalha',
-    proficiencies: 'Perícias de análise, comando e combate.',
-    items: 'Itens de combate e ferramentas pertinentes.',
+    proficiencies: 'Ferramentas de Combatente; escolha 2 entre Acrobacia, Atletismo, Furtividade, Intimidação, Provocação e Sobrevivência.',
+    items: 'Ferramenta de Combatente e mochila pequena.',
     details: [
       { name: 'Comando Rápido', detail: 'Usa reação para instruir aliados visíveis durante o combate com comandos táticos.', bullets: ['Ajuda concede vantagem em ataque.', 'Alerta aumenta a CR do aliado contra um ataque.', 'Dica adiciona dano se o ataque acertar.'] },
       { name: 'Avaliação', detail: 'Analisa uma criatura com Noção de Batalha para descobrir informações úteis sobre ameaça, vulnerabilidades e capacidades.', bullets: ['A CD base usa 16 + modificador de Presença do alvo.', 'Graduações altas permitem obter informações adicionais.'] },
@@ -622,8 +631,8 @@ export const professions: Profession[] = [
   {
     name: 'Engenheiro',
     specialSkill: 'Engenharia',
-    proficiencies: 'Ferramentas de Engenheiro e perícias de tecnologia/construção.',
-    items: 'Ferramentas e materiais de engenhoca.',
+    proficiencies: 'Ferramentas de Engenheiro; escolha 2 entre História, Intuição, Investigação, Percepção, Prestidigitação e Sobrevivência.',
+    items: 'Ferramenta de Engenheiro e mochila pequena.',
     details: [
       { name: 'Aprimorar Equipamento', detail: 'Usa Engenharia para melhorar armas e equipamentos, aumentando alcance, acerto ou propriedades especiais.', bullets: ['CD 14 para melhorias simples de armas.', 'CD 17 para fio especial, Kairoseki ou revestimentos complexos.', 'Resultado 1 no d20 pode quebrar o item sem reparo.'] },
       { name: 'Criar Engenhoca', detail: 'Constrói equipamentos engenhados usando dials, materiais, tempo e CD definidos em tabela.', bullets: ['Falha exige comprar materiais extras equivalentes a parte do custo total.', 'Inclui itens como Clima-Tact, Burn Bazooka e disparador de Pop Green.'] },
@@ -633,8 +642,8 @@ export const professions: Profession[] = [
   {
     name: 'Médico',
     specialSkill: 'Medicina',
-    proficiencies: 'Ferramentas de Médico e perícias ligadas a tratamento.',
-    items: 'Ferramentas de Médico e suprimentos.',
+    proficiencies: 'Ferramentas de Médico; escolha 2 entre História, Intuição, Investigação, Percepção, Prestidigitação e Sobrevivência.',
+    items: 'Ferramenta de Médico e mochila pequena.',
     details: [
       { name: 'Controle de Doenças', detail: 'Usa Medicina para diagnosticar, tratar e reduzir efeitos de doenças, venenos ou condições clínicas.', bullets: ['Tratamentos podem exigir dias, custos e ferramentas adequadas.', 'A graduação melhora a segurança e eficiência do cuidado.'] },
       { name: 'Tratar Ferimentos', detail: 'Realiza cuidados médicos e cirurgias para recuperar PV e tratar ferimentos persistentes.', bullets: ['Feridas graves usam CD e tempo de cirurgia conforme gravidade.', 'A CD pode ser modificada pela Constituição do paciente e pelo atraso no tratamento.'] },
@@ -645,8 +654,8 @@ export const professions: Profession[] = [
   {
     name: 'Músico',
     specialSkill: 'Canção',
-    proficiencies: 'Instrumentos musicais e perícias performáticas.',
-    items: 'Instrumento e ferramentas de músico.',
+    proficiencies: 'Ferramentas de Músico; escolha 2 entre Acrobacia, Atuação, Enganação, Furtividade, Intimidação, Intuição, Percepção, Persuasão, Prestidigitação e Provocação.',
+    items: 'Ferramenta de Músico e mochila pequena.',
     details: [
       { name: 'Alma de Artista', detail: 'Representa treino musical intenso e presença artística, fortalecendo apresentações e reações emocionais do público.', bullets: ['Pode interagir com testes sociais e apresentações musicais.', 'Alguns usos recuperam no término de descanso longo.'] },
       { name: 'Confusão', detail: 'Parte do repertório encantador. A música perturba emoções e pode gerar comportamentos aleatórios em criaturas afetadas.', bullets: ['Usa efeitos definidos por tabela d10 no PDF.', 'A quantidade de usos se relaciona ao bônus de proficiência.'] },
@@ -657,8 +666,8 @@ export const professions: Profession[] = [
   {
     name: 'Navegador',
     specialSkill: 'Navegação',
-    proficiencies: 'Ferramentas de Navegador e perícias de orientação.',
-    items: 'Ferramentas de Navegador.',
+    proficiencies: 'Ferramentas de Navegador; escolha 2 entre Enganação, Intuição, Investigação, Percepção, Persuasão e Sobrevivência.',
+    items: 'Ferramenta de Navegador e mochila pequena.',
     details: [
       { name: 'Sempre Informado', detail: 'Mantém jornais, rumores e conhecimento de mundo para guiar o grupo em terra e no mar.', bullets: ['Navegação CD 16 identifica figuras importantes e seus feitos públicos.', 'Pode intermediar compras com desconto, melhorando com graduação.'] },
       { name: 'Previsão Marítima', detail: 'Antes de viajar, observa clima, vento, aves e fenômenos para prever perigos marítimos.', bullets: ['Com sucesso, a viagem atrasa 1d4 dias, mas os testes de Navegação durante o período recebem sucessos automáticos.', 'CDs variam por mar: Blues 10, Paradise 14, Novo Mundo 16, outros mares 12.'] },
@@ -724,46 +733,271 @@ export const xpTable = [
   { level: 20, xp: 355000, proficiency: 6, stage: 'Fama Mundial' },
 ]
 
+export const relatedRules: RuleReference[] = [
+  {
+    name: 'Criação em etapas',
+    detail: 'A ficha segue a ordem do Livro do Jogador: espécie, estilo de combate, atributos, descrição, equipamento e grupo.',
+    bullets: [
+      'A espécie define traços, deslocamento, preconceito e PV base.',
+      'O estilo de combate define dado de vida, salvaguardas, armas, perícias, atributo primário, arma favorita, HB inata e equipamentos.',
+      'A profissão acrescenta perícias, ferramentas, perícia especial do ofício e itens iniciais.',
+    ],
+  },
+  {
+    name: 'Bônus de proficiência',
+    detail: 'O bônus de proficiência vem do nível total e entra em ataques, técnicas, perícias, ferramentas e salvaguardas quando houver proficiência.',
+    bullets: [
+      'O bônus não é aplicado mais de uma vez à mesma rolagem ou número.',
+      'Se uma regra mandar dobrar ou reduzir pela metade, modifique o bônus antes de aplicar.',
+      'O estilo e a profissão são as fontes principais de proficiências iniciais.',
+    ],
+  },
+  {
+    name: 'Técnicas e Pontos de Poder',
+    detail: 'Técnicas de Combate e Técnicas Auxiliares usam PP e contam como jogadas especiais quando ofensivas.',
+    bullets: [
+      'Uma técnica normalmente só pode ser usada uma vez por turno, salvo requisito de ação bônus.',
+      'Sem PP, a técnica só pode ser usada por sobrecarga, recebendo exaustão equivalente ao grau da técnica.',
+      'A sobrecarga não pode elevar a exaustão acima do 5º nível.',
+    ],
+  },
+  {
+    name: 'Equipamento inicial',
+    detail: 'Ao criar o personagem, some o equipamento do estilo de combate com o da profissão e registre a origem narrativa desses itens.',
+    bullets: [
+      'Armas e equipamentos vendidos em mercado comum valem, em regra, metade do custo normal se estiverem íntegros.',
+      'Itens raros, de mercado negro e Akuma no Mi dependem de permissão, acesso e decisão do Narrador.',
+      'Recipientes usam capacidade em kg quando o PDF informa limite de armazenamento.',
+    ],
+  },
+]
+
+export const queryRules: RuleReference[] = [
+  {
+    name: 'Valores e modificadores',
+    detail: 'Modificador de atributo: subtraia 10 do valor, divida por 2 e arredonde para baixo.',
+    bullets: [
+      'Atributos abaixo de 10 geram modificadores negativos.',
+      'Aumentos de atributo normalmente não passam de 20, salvo regras de progressão ou características específicas.',
+    ],
+  },
+  {
+    name: 'PV, PP e CD',
+    detail: 'PV, Pontos de Poder e CDs são derivados de espécie, estilo, nível, Constituição e atributo primário.',
+    bullets: [
+      'PV no 1º nível: dado máximo do estilo + PV base da espécie + modificador de Constituição.',
+      'PP: 2 por nível de personagem.',
+      'CD de técnica: 8 + bônus de proficiência + modificador do atributo primário escolhido.',
+    ],
+  },
+  {
+    name: 'Classe de Resistência',
+    detail: 'A CR padrão usa 10 + modificador de Destreza; algumas HB defensivas alteram esse cálculo.',
+    bullets: [
+      'Corpo de Guerreiro usa atributo primário + Constituição limitada pelo nível, conforme a característica.',
+      'Defesa Ofensiva permite trocar Destreza pelo atributo primário quando a arma favorita e os requisitos forem atendidos.',
+      'Escudo de Ferro adiciona +2 na CR e pode receber dano no lugar do usuário.',
+      'O trecho de equipamentos consultado não traz uma tabela geral de armaduras; roupas especiais protegem contra ambiente, enquanto defesa mecânica vem de CR, escudo e características.',
+    ],
+  },
+  {
+    name: 'Carga e sobrecarga',
+    detail: 'A ficha usa a regra de capacidade simples: carga em kg baseada no valor de Força e referências separadas para arrastar/levantar.',
+    bullets: [
+      'Capacidade pessoal sugerida: Força x 10 kg.',
+      'Arrastar ou levantar: Força x 20 kg.',
+      'Sobrecarga de esforço em técnicas é diferente de peso carregado e interage com exaustão.',
+    ],
+  },
+  {
+    name: 'Armas e proficiência',
+    detail: 'O estilo de combate define as armas com que o personagem soma proficiência nas jogadas de ataque.',
+    bullets: [
+      'Sem proficiência na arma, o bônus de proficiência não é somado ao ataque.',
+      'Armas cortantes têm dano próprio; armas marciais usam o dano desarmado aumentado em um passo.',
+      'Munição, recarga, duas mãos, pesada, acuidade, alcance e arremesso seguem as propriedades listadas no capítulo de equipamentos.',
+    ],
+  },
+  {
+    name: 'Vantagem, desvantagem e específico vence geral',
+    detail: 'Com vantagem, role dois d20 e use o maior; com desvantagem, use o menor.',
+    bullets: [
+      'Quando vantagem e desvantagem coexistem, o Narrador decide a aplicação conforme o contexto da regra usada.',
+      'Se uma característica específica contrariar uma regra geral, a regra específica prevalece.',
+      'Arredondamentos do sistema são feitos para baixo, salvo indicação diferente.',
+    ],
+  },
+]
+
 export const equipmentItems: EquipmentItem[] = [
-  { name: 'Mochila Pequena', category: 'Equipamento', rarity: 'Comum', cost: '฿ 10.000', load: 1, capacity: '30 kg', detail: 'Recipiente com limite de 30 kg de equipamentos.' },
-  { name: 'Mochila Média', category: 'Equipamento', rarity: 'Comum', cost: '฿ 15.000', load: 1, capacity: '60 kg', detail: 'Recipiente com limite de 60 kg de equipamentos.' },
-  { name: 'Mochila Grande', category: 'Equipamento', rarity: 'Incomum', cost: '฿ 20.000', load: 1, capacity: '100 kg', detail: 'Recipiente com limite de 100 kg de equipamentos.' },
-  { name: 'Algibeira', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 1, capacity: '3 kg', detail: 'Recipiente pequeno com capacidade de 3 kg de equipamentos.' },
-  { name: 'Saco', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 1, capacity: '10 kg', detail: 'Recipiente com capacidade de 10 kg de equipamentos.' },
-  { name: 'Cesto', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 1, capacity: '20 kg', detail: 'Recipiente com capacidade de 20 kg de equipamentos.' },
-  { name: 'Baú', category: 'Utilitário', rarity: 'Comum', cost: '฿ 12.000', load: 1, capacity: '150 kg', detail: 'Guarda objetos, valores e dinheiro; recipiente com capacidade de 150 kg.' },
-  { name: 'Cantil', category: 'Equipamento', rarity: 'Comum', cost: '฿ 2.000', load: 1, detail: 'Garrafa de viagem com 2 litros de capacidade.' },
-  { name: 'Corda', category: 'Equipamento', rarity: 'Comum', cost: '฿ 1.500', load: 1, detail: 'Corda resistente de 15 metros para usos variados.' },
-  { name: 'Lanterna', category: 'Equipamento', rarity: 'Comum', cost: '฿ 800', load: 1, detail: 'Ilumina um cone de 4 metros à frente.' },
-  { name: 'Kit de Escalada', category: 'Ferramenta', rarity: 'Incomum', cost: '฿ 30.000', load: 1, detail: 'Permite ancorar-se para limitar quedas durante escaladas.' },
-  { name: 'Kit Médico', category: 'Ferramenta', rarity: 'Incomum', cost: '฿ 15.000', load: 1, detail: 'Suprimentos médicos para cirurgia, tratamento e prevenção.' },
-  { name: 'Kit de Primeiros Socorros', category: 'Ferramenta', rarity: 'Comum', cost: '฿ 10.000', load: 1, detail: 'Uso único; pode retornar personagem desacordado a 1 PV.' },
-  { name: 'Kit para Abrir Cadeado', category: 'Ferramenta', rarity: 'Raro', cost: '฿ 15.000', load: 1, detail: 'Conjunto de dez usos para abrir cadeados e fechaduras comuns.' },
+  { name: 'Acomodação Esquálida', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 1.000/diária', load: 0, detail: 'Hospedagem mínima, normalmente insegura e desconfortável.' },
+  { name: 'Acomodação Pobre', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 3.000/diária', load: 0, detail: 'Abrigo simples com comida e bebida mínimas incluídas.' },
+  { name: 'Acomodação Modesta', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 5.000/diária', load: 0, detail: 'Hospedagem limpa e comum para viajantes sem luxo.' },
+  { name: 'Acomodação Confortável', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 10.000/diária', load: 0, detail: 'Quarto melhor, manutenção adequada e segurança razoável.' },
+  { name: 'Acomodação Rica', category: 'Comida e hospedagem', rarity: 'Incomum', cost: '฿ 25.000/diária', load: 0, detail: 'Hospedagem de alto padrão, associada a contatos e riscos sociais maiores.' },
+  { name: 'Acomodação Aristocrática', category: 'Comida e hospedagem', rarity: 'Raro', cost: '฿ 40.000/diária', load: 0, detail: 'Luxo completo para personagens circulando entre figuras influentes.' },
+  { name: 'Banquete', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 10.000/pessoa', load: 0, detail: 'Refeição especial para encontros sociais e celebrações.' },
+  { name: 'Carne', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 800/pedaço', load: 0, detail: 'Porção simples de carne para consumo ou preparo.' },
+  { name: 'Saquê Comum', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 1.800/jarra', load: 0, detail: 'Bebida comum vendida em tavernas e portos.' },
+  { name: 'Saquê Fino', category: 'Comida e hospedagem', rarity: 'Incomum', cost: '฿ 5.000/garrafa', load: 0, detail: 'Bebida refinada usada em reuniões ou presentes.' },
+  { name: 'Refeição Pobre', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 1.200/diária', load: 0, detail: 'Alimentação diária básica.' },
+  { name: 'Refeição Modesta', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 2.000/diária', load: 0, detail: 'Alimentação diária decente e simples.' },
+  { name: 'Refeição Confortável', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 3.000/diária', load: 0, detail: 'Alimentação diária bem preparada.' },
+  { name: 'Refeição Rica', category: 'Comida e hospedagem', rarity: 'Incomum', cost: '฿ 6.000/diária', load: 0, detail: 'Alimentação diária de boa qualidade.' },
+  { name: 'Refeição Aristocrática', category: 'Comida e hospedagem', rarity: 'Raro', cost: '฿ 10.000/diária', load: 0, detail: 'Alimentação diária luxuosa.' },
+  { name: 'Pão', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 80/pedaço', load: 0, detail: 'Alimento simples e barato.' },
+  { name: 'Queijo', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 60/pedaço', load: 0, detail: 'Alimento comum para refeições rápidas.' },
+  { name: 'Vinho - Jarra', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 5.000', load: 0, detail: 'Jarra de vinho para mesa ou celebração.' },
+  { name: 'Vinho - Caneca', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 500', load: 0, detail: 'Caneca individual de vinho.' },
+  { name: 'Vinho - Garrafa', category: 'Comida e hospedagem', rarity: 'Comum', cost: '฿ 2.000', load: 0, detail: 'Garrafa de vinho comum.' },
+
   { name: 'Ferramentas de Profissão - Amador', category: 'Ferramenta', rarity: 'Comum', cost: '฿ 20.000', load: 1, detail: 'Conjunto necessário para executar uma profissão em graduação amador.' },
   { name: 'Ferramentas de Profissão - Profissional', category: 'Ferramenta', rarity: 'Comum', cost: '฿ 40.000', load: 1, detail: 'Conjunto necessário para executar uma profissão em graduação profissional.' },
   { name: 'Ferramentas de Profissão - Especialista', category: 'Ferramenta', rarity: 'Incomum', cost: '฿ 60.000', load: 1, detail: 'Conjunto necessário para executar uma profissão em graduação especialista.' },
   { name: 'Ferramentas de Profissão - Mestre', category: 'Ferramenta', rarity: 'Raro', cost: '฿ 80.000', load: 1, detail: 'Conjunto necessário para executar uma profissão em graduação mestre.' },
-  { name: 'Equipamento de Mergulho', category: 'Equipamento', rarity: 'Raro', cost: 'Roupa ฿ 15.000; tanque ฿ 35.000; bomba ฿ 50.000', load: 1, detail: 'Permite explorar mar aberto com tanque de oxigênio de 1 hora.' },
-  { name: 'Den-Den Mushi Comum', category: 'Utilitário', rarity: 'Comum', cost: '฿ 50.000', load: 1, detail: 'Dispositivo de comunicação com boa área de sinal.' },
-  { name: 'Den-Den Mushi Bebê', category: 'Utilitário', rarity: 'Raro', cost: '฿ 50.000', load: 1, detail: 'Versão portátil, limitada à mesma área ou ilha.' },
-  { name: 'Log Pose', category: 'Utilitário', rarity: 'Comum', cost: '฿ 50.000', load: 1, detail: 'Item de navegação essencial para rotas marítimas.' },
-  { name: 'Eternal Pose', category: 'Utilitário', rarity: 'Raro', cost: '฿ 300.000', load: 1, detail: 'Sempre aponta para uma única ilha.' },
-  { name: 'Adaga/Kunai', category: 'Arma', rarity: 'Comum', cost: '฿ 20.000', load: 1, detail: 'Acuidade e arremesso 6/15 m; dano 1d4 cortante ou perfurante.' },
-  { name: 'Katana', category: 'Arma', rarity: 'Comum', cost: '฿ 70.000', load: 1, detail: 'Acuidade; dano 1d6 cortante.' },
-  { name: 'Rapieira', category: 'Arma', rarity: 'Comum', cost: '฿ 70.000', load: 1, detail: 'Acuidade; dano 1d6 cortante ou perfurante.' },
-  { name: 'Machado Grande', category: 'Arma', rarity: 'Comum', cost: '฿ 90.000', load: 1, detail: 'Alcance, duas mãos e pesada; dano 1d12 cortante.' },
-  { name: 'Pistola', category: 'Arma', rarity: 'Comum', cost: '฿ 70.000', load: 1, detail: 'Distância 9/15 m e munição; cada disparo gasta uma munição.' },
-  { name: 'Mosquete', category: 'Arma', rarity: 'Comum', cost: '฿ 100.000', load: 1, detail: 'Distância 18/24 m, munição e duas mãos.' },
-  { name: 'Escopeta', category: 'Arma', rarity: 'Comum', cost: '฿ 150.000', load: 1, detail: 'Cone de 3 m, duas mãos, munição e recarga; gasta 10 munições esféricas.' },
-  { name: 'Escudo de Ferro', category: 'Arma', rarity: 'Comum', cost: '฿ 50.000', load: 1, detail: 'Adiciona +2 na CR; suporta dano antes de quebrar.' },
-  { name: 'Tridente', category: 'Arma', rarity: 'Comum', cost: '฿ 70.000', load: 1, detail: 'Alcance e duas mãos; dano 1d10 perfurante ou 1d6 contundente.' },
-  { name: 'Kanabo/Tacape', category: 'Arma', rarity: 'Comum', cost: '฿ 60.000', load: 1, detail: 'Arma de cerco, duas mãos e pesada; dano marcial contundente ou perfurante.' },
-  { name: 'Munição Esférica', category: 'Munição', rarity: 'Comum', cost: '฿ 500/unidade', load: 0.1, detail: 'Munição simples de armas de disparo; dano 1d6 contundente.' },
-  { name: 'Munição Perfurante', category: 'Munição', rarity: 'Comum', cost: '฿ 1.000/unidade', load: 0.1, detail: 'Munição simples de armas de disparo; dano 1d8 perfurante.' },
-  { name: 'Flecha', category: 'Munição', rarity: 'Comum', cost: '฿ 500/unidade', load: 0.1, detail: 'Munição de arco; dano 1d6 perfurante.' },
-  { name: 'Dinamite', category: 'Munição', rarity: 'Comum', cost: '฿ 25.000', load: 1, detail: 'Arremesso 6 m; explosão CD 15 em área, escalando com bananas adicionais.' },
-  { name: 'Bote', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 160.000', load: 1, capacity: '210 kg', detail: 'Veículo aquático; deslocamento por correnteza; capacidade 210 kg.' },
-  { name: 'Barco a Remo', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 240.000', load: 1, capacity: '220 kg', detail: 'Correnteza + 2 nós; capacidade 220 kg.' },
-  { name: 'Cavalo de Montaria', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 2.000.000', load: 1, capacity: '220 kg', detail: 'Deslocamento 18 m; capacidade de carga 220 kg.' },
-  { name: 'Burro ou Mula', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 300.000', load: 1, capacity: '210 kg', detail: 'Deslocamento 12 m; capacidade de carga 210 kg.' },
+  { name: 'Kit de Chaves', category: 'Ferramenta', rarity: 'Comum', cost: '฿ 10.000', load: 1, detail: 'Conjunto de chaves mecânicas variadas para construção e desconstrução de objetos.' },
+  { name: 'Kit de Construção', category: 'Ferramenta', rarity: 'Comum', cost: '฿ 3.000', load: 1, detail: 'Pregos, parafusos, porcas, arruelas, lixas e materiais básicos de montagem.' },
+  { name: 'Kit de Cozinha', category: 'Ferramenta', rarity: 'Comum', cost: '฿ 60.000', load: 1, detail: 'Facas, panelas e utensílios para preparar todo tipo de comida.' },
+  { name: 'Kit de Disfarce', category: 'Ferramenta', rarity: 'Raro', cost: '฿ 45.000', load: 1, detail: 'Roupas, perucas e adereço peculiar para montar disfarces.', rules: ['Só pode ser usado por quem tiver proficiência.'] },
+  { name: 'Kit de Escalada', category: 'Ferramenta', rarity: 'Incomum', cost: '฿ 30.000', load: 1, detail: 'Pítons, botas pontiagudas, luvas e cinto para ancoragem em escaladas.', rules: ['Com uma ação, você se ancora e não pode cair mais de 7,5 m do ponto de ancoragem.'] },
+  { name: 'Kit de Falsificação', category: 'Ferramenta', rarity: 'Mercado Negro', cost: '20% do item original', load: 1, detail: 'Kit variável com moldes, materiais e tinta para falsificar objetos.', rules: ['Só pode ser usado por quem tiver proficiência.'] },
+  { name: 'Kit Médico', category: 'Ferramenta', rarity: 'Incomum', cost: '฿ 15.000', load: 1, detail: 'Remédios básicos, seringas, agulhas, suturas e suprimentos para cirurgia, tratamentos e prevenção.' },
+  { name: 'Kit de Pesquisa', category: 'Ferramenta', rarity: 'Raro', cost: '฿ 60.000', load: 1, detail: 'Uso único com tubos, frascos, químicos, pipetas, provetas e placas para pesquisa química ou biológica.' },
+  { name: 'Kit de Primeiros Socorros', category: 'Ferramenta', rarity: 'Comum', cost: '฿ 10.000', load: 1, detail: 'Kit de uso único com itens básicos de emergência.', rules: ['Pode retornar um personagem desacordado a 1 PV.'] },
+  { name: 'Kit de Temperos', category: 'Ferramenta', rarity: 'Comum', cost: '฿ 15.000', load: 1, detail: 'Conjunto de especiarias para preparar pratos variados.' },
+  { name: 'Kit para Abrir Cadeado', category: 'Ferramenta', rarity: 'Raro', cost: '฿ 15.000', load: 1, detail: 'Ferramentas de dez usos para abrir cadeados e fechaduras comuns.', rules: ['Só pode ser usado por quem tiver proficiência.'] },
+  { name: 'Kit de Venenos', category: 'Ferramenta', rarity: 'Incomum', cost: '฿ 50.000', load: 1, detail: 'Frascos, almofariz, químicos e instrumentos para criar, aplicar e identificar venenos.', rules: ['Proficiência permite manusear e aplicar veneno sem risco de exposição.', 'Atividades: perceber objeto envenenado CD 10, determinar efeitos CD 15, extrair veneno CD 16.'] },
+  { name: 'Kit de Herbalismo', category: 'Ferramenta', rarity: 'Incomum', cost: '฿ 50.000', load: 1, detail: 'Bolsas, tesouras, luvas, almofariz, pilão e frascos para identificar plantas e preparar remédios.', rules: ['Necessário para criar antídotos.', 'Atividades: encontrar plantas CD 15, identificar veneno CD 20.'] },
+  { name: 'Livro de Profissão - Amador', category: 'Ferramenta', rarity: 'Comum', cost: '฿ 10.000', load: 1, detail: 'Livro que ensina os princípios básicos para se tornar amador em uma profissão.' },
+  { name: 'Livro de Profissão - Profissional', category: 'Ferramenta', rarity: 'Incomum', cost: '฿ 100.000', load: 1, detail: 'Livro que aprofunda a profissão até a graduação profissional.' },
+  { name: 'Livro de Profissão - Especialista', category: 'Ferramenta', rarity: 'Raro', cost: '฿ 500.000', load: 1, detail: 'Livro avançado para alcançar a graduação especialista.' },
+
+  { name: 'Algibeira', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 1, capacity: '15 cm³ / 3 kg', detail: 'Recipiente pequeno para carregar objetos leves.' },
+  { name: 'Balde', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 1, capacity: '12 litros / 15 cm³ sólido', detail: 'Recipiente para líquidos ou materiais sólidos.' },
+  { name: 'Barril', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 1, capacity: '160 litros / 1,2 m³ sólido', detail: 'Recipiente grande para armazenamento em navios e depósitos.' },
+  { name: 'Caneca', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 0.1, capacity: '500 ml', detail: 'Recipiente pequeno para bebidas.' },
+  { name: 'Cantil', category: 'Equipamento', rarity: 'Comum', cost: '฿ 2.000', load: 1, capacity: '2 litros', detail: 'Garrafa com tampa e corda feita para uso em viagens.' },
+  { name: 'Cesto', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 1, capacity: '60 cm³ / 20 kg', detail: 'Recipiente aberto para transportar itens leves e médios.' },
+  { name: 'Frasco', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 0.1, capacity: '120 ml', detail: 'Recipiente pequeno para líquidos.' },
+  { name: 'Garrafa', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 0.1, capacity: '750 ml', detail: 'Recipiente comum para bebida ou líquido.' },
+  { name: 'Jarra', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 0.2, capacity: '5 litros', detail: 'Recipiente para servir líquidos.' },
+  { name: 'Mochila Pequena', category: 'Equipamento', rarity: 'Comum', cost: '฿ 10.000', load: 1, capacity: '40 cm³ / 30 kg', detail: 'Mochila para guardar itens e equipamentos; pode carregar saco de dormir ou corda presos fora dela.' },
+  { name: 'Mochila Média', category: 'Equipamento', rarity: 'Comum', cost: '฿ 15.000', load: 1, capacity: '70 cm³ / 60 kg', detail: 'Mochila de capacidade intermediária para viagens.' },
+  { name: 'Mochila Grande', category: 'Equipamento', rarity: 'Incomum', cost: '฿ 20.000', load: 1, capacity: '100 cm³ / 100 kg', detail: 'Mochila grande para longas jornadas e maior volume de itens.' },
+  { name: 'Saco', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 1, capacity: '30 cm³ / 10 kg', detail: 'Recipiente simples e flexível para transporte.' },
+  { name: 'Algemas', category: 'Equipamento', rarity: 'Incomum', cost: '฿ 5.000', load: 1, detail: 'Par de algemas que restringe membros presos.', rules: ['Nos membros superiores causa Incapacitado.', 'Nos membros inferiores reduz o deslocamento pela metade.'] },
+  { name: 'Algemas de Kairoseki', category: 'Equipamento', rarity: 'Mercado Negro', cost: '฿ 2.000.000', load: 1, detail: 'Algemas próprias para prender usuários de Akuma no Mi.', rules: ['Aplica os efeitos de algemas comuns e a condição Enfraquecido.'] },
+  { name: 'Chapa Metálica de Aço', category: 'Equipamento', rarity: 'Incomum', cost: '฿ 8.000/unidade', load: 1, detail: 'Chapa de aço em tamanho padrão para construções.' },
+  { name: 'Corda', category: 'Equipamento', rarity: 'Comum', cost: '฿ 1.500', load: 1, detail: 'Corda resistente de 15 metros para navios, casas e usos variados.' },
+  { name: 'Corrente de Elos', category: 'Equipamento', rarity: 'Comum', cost: '฿ 1.200/metro', load: 1, detail: 'Corrente metálica útil para amarração, transporte e contenção.' },
+  { name: 'Equipamento de Mergulho', category: 'Equipamento', rarity: 'Raro', cost: 'Roupa ฿ 15.000; tanque ฿ 35.000; bomba ฿ 50.000', load: 1, detail: 'Uniforme com máscara, tanque, roupa térmica e pés de pato para explorar mar aberto.', rules: ['O tanque dura 1 hora e precisa ser reabastecido periodicamente no barco.', 'Concede bônus nulo de defesa.'] },
+  { name: 'Ganchos de Escalada', category: 'Equipamento', rarity: 'Raro', cost: '฿ 10.000', load: 1, detail: 'Par de ganchos acopláveis às mãos e pés.', rules: ['Permite escalar paredes sem redução ou Teste de Atributo.'] },
+  { name: 'Grilhões de Transporte', category: 'Equipamento', rarity: 'Incomum', cost: '฿ 15.000', load: 1, detail: 'Algemas e correntes presas nos braços, cintura e pernas para transportar prisioneiros.' },
+  { name: 'Instrumento Musical', category: 'Equipamento', rarity: 'Comum', cost: '฿ 10.000 a ฿ 15.000', load: 1, detail: 'Instrumento musical escolhido pelo jogador.' },
+  { name: 'Lanterna', category: 'Equipamento', rarity: 'Comum', cost: '฿ 800', load: 1, detail: 'Instrumento cilíndrico com lâmpadas e vidro.', rules: ['Ilumina um cone de 4 metros à frente.'] },
+  { name: 'Lingote de Metal', category: 'Equipamento', rarity: 'Comum', cost: '฿ 6.000/unidade', load: 1, detail: 'Lingote de cerca de 1 kg de metal variado.' },
+  { name: 'Óculos de Visão Noturna', category: 'Equipamento', rarity: 'Mercado Negro', cost: '฿ 85.000', load: 1, detail: 'Aparato desenvolvido pela Marinha para escolta e combate em ambientes escuros.', rules: ['Permite enxergar onde normalmente não seria possível.'] },
+  { name: 'Rede de Kairoseki', category: 'Equipamento', rarity: 'Mercado Negro', cost: '฿ 3.000.000', load: 1, detail: 'Rede para prender usuários de Akuma no Mi e bloquear seus poderes.', rules: ['Ataque à distância em linha reta até 6 m contra uma criatura Média ou menor.', 'Em acerto, impõe Enfraquecido e Impedido.'] },
+  { name: 'Rede de Pesca/Captura', category: 'Equipamento', rarity: 'Comum', cost: '฿ 1.500', load: 1, detail: 'Rede trançada para pesca ou captura.', rules: ['Ataque à distância em linha reta até 6 m contra uma criatura Média ou menor.', 'Em acerto, impõe Impedido.'] },
+  { name: 'Sela', category: 'Equipamento', rarity: 'Comum', cost: '฿ 28.000', load: 1, detail: 'Sela de couro para manter o cavaleiro vinculado ao animal e controlar sua navegação.' },
+  { name: 'Tábua de Madeira', category: 'Equipamento', rarity: 'Comum', cost: '฿ 2.200/unidade', load: 1, detail: 'Tábua de tamanho padrão para construções.' },
+  { name: 'Tenda', category: 'Equipamento', rarity: 'Comum', cost: 'Variável', load: 1, detail: 'Abrigo portátil usado em acampamentos; aparece como item inicial de algumas profissões.' },
+  { name: 'Vara de Pescar', category: 'Equipamento', rarity: 'Comum', cost: '฿ 8.000', load: 1, detail: 'Vara simples de madeira com linha resistente, boia e anzol.' },
+
+  { name: 'Asa Delta', category: 'Utilitário', rarity: 'Raro', cost: '฿ 260.000', load: 1, detail: 'Equipamento para capturar correntes de vento e planar.', rules: ['Dependendo do clima, adiciona 9 m de deslocamento de voo.'] },
+  { name: 'Baú', category: 'Utilitário', rarity: 'Comum', cost: '฿ 12.000', load: 1, capacity: '3,5 m³ / 150 kg', detail: 'Guarda objetos, itens de valor e dinheiro com cadeado resistente.' },
+  { name: 'Cofre', category: 'Utilitário', rarity: 'Incomum', cost: '฿ 60.000', load: 1, detail: 'Armazenamento resistente com sistema especial de trancas.' },
+  { name: 'Den-Den Mushi Alto Falante', category: 'Utilitário', rarity: 'Comum', cost: '฿ 32.000', load: 1, detail: 'Dispositivo de comunicação para anúncios em áreas públicas ou específicas.' },
+  { name: 'Den-Den Mushi Bebê', category: 'Utilitário', rarity: 'Raro', cost: '฿ 50.000', load: 1, detail: 'Versão portátil, limitada à mesma área ou ilha.', rules: ['Também pode propagar a voz de uma pessoa para uma área inteira.'] },
+  { name: 'Den-Den Mushi Branco', category: 'Utilitário', rarity: 'Mercado Negro', cost: '฿ 600.000', load: 1, detail: 'Dispositivo para grampear conversas ou proteger linhas de comunicação.', rules: ['Uso fora de Governo Mundial ou Marinha pode levar a confisco e prisão para investigação.'] },
+  { name: 'Den-Den Mushi Câmera', category: 'Utilitário', rarity: 'Incomum', cost: '฿ 40.000', load: 1, detail: 'Den-den mushi capaz de tirar fotos ao emitir flash pelos olhos.' },
+  { name: 'Den-Den Mushi Fone', category: 'Utilitário', rarity: 'Raro', cost: '฿ 20.000', load: 1, detail: 'Fone conectado a outro den-den mushi para evitar interceptação.' },
+  { name: 'Den-Den Mushi Comum', category: 'Utilitário', rarity: 'Comum', cost: '฿ 50.000', load: 1, detail: 'Dispositivo de comunicação com grande área de ação e bom sinal.' },
+  { name: 'Den-Den Mushi Preto', category: 'Utilitário', rarity: 'Mercado Negro', cost: '฿ 120.000', load: 1, detail: 'Dispositivo portátil usado discretamente por agentes, Marinha e revolucionários.', rules: ['Alcance limitado à mesma ilha.'] },
+  { name: 'Eternal Pose', category: 'Utilitário', rarity: 'Raro', cost: '฿ 300.000', load: 1, detail: 'Semelhante ao Log Pose, mas sempre aponta para uma única ilha.' },
+  { name: 'Log Pose', category: 'Utilitário', rarity: 'Comum', cost: '฿ 50.000', load: 1, detail: 'Item essencial para navegar pela Grand Line.', rules: ['Memoriza o campo magnético da ilha em 1 dia a 1 semana e aponta para a próxima rota.'] },
+  { name: 'Log Pose de 3 Agulhas', category: 'Utilitário', rarity: 'Incomum', cost: '฿ 500.000', load: 1, detail: 'Log Pose com três agulhas para mares do Novo Mundo.', rules: ['A agulha mais estática aponta para a ilha mais segura.'] },
+  { name: 'Vivre Card', category: 'Utilitário', rarity: 'Raro', cost: '฿ 2.000.000', load: 1, detail: 'Material especial que aponta para a direção de uma pessoa específica usando material biológico.' },
+  { name: 'Roupa de Gala', category: 'Utilitário', rarity: 'Incomum', cost: '฿ 400.000', load: 1, detail: 'Peças de roupa para festas e reuniões de alto nível social.' },
+  { name: 'Roupa Especial', category: 'Utilitário', rarity: 'Incomum', cost: '฿ 40.000', load: 1, detail: 'Roupa adequada para clima ou ambiente específico.', rules: ['Evita exaustão por imposições climáticas quando a roupa for apropriada.'] },
+
+  { name: 'Ampola de Anestesia', category: 'Consumível', rarity: 'Incomum', cost: '฿ 80.000', load: 0.1, detail: 'Frasco de 100 ml com líquido anestésico para uso com seringa.' },
+  { name: 'Antídoto', category: 'Consumível', rarity: 'Comum', cost: '฿ 40.000', load: 0.1, detail: 'Frasco para anular venenos comuns ou servir de base para antídotos complexos.' },
+  { name: 'Bastão de Fumaça', category: 'Consumível', rarity: 'Comum', cost: '฿ 10.000', load: 1, detail: 'Bastão de trinta centímetros que solta fumaça ao ser quebrado.', rules: ['Cria nuvem de fumaça de 6 m de raio, branca e não tóxica.'] },
+  { name: 'Caixa de Maquiagem', category: 'Consumível', rarity: 'Comum', cost: '฿ 5.000', load: 1, detail: 'Caixa com maquiagem e produtos para passar no corpo.' },
+  { name: 'Combustível de Máquina', category: 'Consumível', rarity: 'Incomum', cost: '฿ 4.000/unidade', load: 0.1, detail: 'Combustível para robôs e grandes máquinas.', rules: ['Cada unidade dura 10 dias.'] },
+  { name: 'Frasco de Ácido', category: 'Consumível', rarity: 'Raro', cost: '฿ 20.000/unidade', load: 0.1, detail: 'Frasco com ácido poderoso.', rules: ['Pode ser arremessado a 6 m com ataque à distância.', 'Ao atingir, causa 3d8 de dano de ácido.'] },
+  { name: 'Gás do Sono', category: 'Consumível', rarity: 'Mercado Negro', cost: '฿ 80.000/unidade', load: 1, detail: 'Recipiente com gás sonífero.', rules: ['Espalha esfera de 1,5 m, aumentando até 9 m por 1 minuto.', 'Criaturas na área fazem Salvaguarda de Constituição ou ficam Sonolentas; d20 igual a 1 deixa inconsciente.'] },
+  { name: 'Gás Inflamável', category: 'Consumível', rarity: 'Raro', cost: '฿ 150.000/unidade', load: 1, detail: 'Recipiente de metal com gás inflamável.', rules: ['Espalha esfera de 1,5 m, aumentando até 9 m por 1 minuto.', 'Fogo ou faísca força Salvaguarda de Destreza para evitar 3d6 de dano de fogo.'] },
+  { name: 'Núcleo de Energia', category: 'Consumível', rarity: 'Raro', cost: '฿ 500.000/unidade', load: 1, detail: 'Fonte de energia para Raid Suit.', rules: ['Cada unidade restaura até 100 Pontos de Tecnologia.'] },
+  { name: 'Pacote de Isca de Peixe', category: 'Consumível', rarity: 'Comum', cost: '฿ 200', load: 0.1, detail: 'Pacote com 20 iscas para vara de pescar.' },
+  { name: 'Pacote de Pólvora', category: 'Consumível', rarity: 'Incomum', cost: '฿ 20.000', load: 0.1, detail: 'Pólvora suficiente para um disparo de canhão.' },
+  { name: 'Pilha/Bateria', category: 'Consumível', rarity: 'Comum', cost: '฿ 200', load: 0.1, detail: 'Fonte de energia para instrumentos elétricos.' },
+  { name: 'Ração de Viagem', category: 'Consumível', rarity: 'Comum', cost: '฿ 2.000/ração', load: 0.1, detail: 'Comida conservada para viagem.', rules: ['Sacia a fome por um dia.'] },
+  { name: 'Ração Militar', category: 'Consumível', rarity: 'Incomum', cost: '฿ 8.000/ração', load: 0.1, detail: 'Ração rica em proteínas e cafeína desenvolvida pela Marinha.', rules: ['Concede 20 PV temporários e mantém alimentado pelo resto do dia.'] },
+  { name: 'Ração para Animais', category: 'Consumível', rarity: 'Comum', cost: '฿ 800/ração', load: 0.1, detail: 'Comida com nutrientes para a maioria dos animais.', rules: ['Sacia a fome por um dia.'] },
+  { name: 'Refeição', category: 'Consumível', rarity: 'Comum', cost: '฿ 1.000', load: 0, detail: 'Comida servida em tavernas e restaurantes.' },
+  { name: 'Tabaco', category: 'Consumível', rarity: 'Comum', cost: '฿ 1.000', load: 0.1, detail: 'Produto agrícola usado recreativamente ou como pesticida.' },
+  { name: 'Tubo de Ensaio', category: 'Consumível', rarity: 'Incomum', cost: '฿ 500', load: 0.1, detail: 'Tubo de vidro para armazenar substâncias.' },
+  { name: 'Veneno Básico - Dose', category: 'Consumível', rarity: 'Mercado Negro', cost: '฿ 80.000', load: 0.1, detail: 'Dose para cobrir uma lâmina cortante/perfurante ou até três munições.', rules: ['Aplicar exige uma ação.', 'Criatura atingida faz Salvaguarda de Constituição CD 10 ou fica Envenenada.', 'O veneno seca após 1 minuto.'] },
+
+  { name: 'Adaga/Kunai', category: 'Arma', rarity: 'Comum', cost: '฿ 20.000', load: 1, properties: 'Acuidade, Arremesso 6/15 m', damage: '1d4 cortante ou perfurante', detail: 'Pequena arma cortante e leve para corpo a corpo ou arremesso.' },
+  { name: 'Daito Katana', category: 'Arma', rarity: 'Comum', cost: '฿ 80.000', load: 1, properties: 'Acuidade, Versátil 1d8', damage: '1d6 cortante', detail: 'Espada maior que uma katana normal, com parte reta e resto curvo.' },
+  { name: 'Katana', category: 'Arma', rarity: 'Comum', cost: '฿ 70.000', load: 1, properties: 'Acuidade', damage: '1d6 cortante', detail: 'Espada de um gume com leve curva.' },
+  { name: 'Kogatana', category: 'Arma', rarity: 'Comum', cost: '฿ 30.000', load: 1, properties: 'Acuidade', damage: '1d4 cortante', detail: 'Versão pequena de uma katana, semelhante a uma faca.' },
+  { name: 'Machado', category: 'Arma', rarity: 'Comum', cost: '฿ 55.000', load: 1, properties: 'Arremesso 6/15 m', damage: '1d6 cortante', detail: 'Cabo de madeira ou metal com lâmina grossa e afiada.' },
+  { name: 'Machado Grande', category: 'Arma', rarity: 'Comum', cost: '฿ 90.000', load: 1, properties: 'Alcance, Duas Mãos, Pesada', damage: '1d12 cortante', detail: 'Machado pesado com duas lâminas opostas.' },
+  { name: 'Nodachi', category: 'Arma', rarity: 'Comum', cost: '฿ 100.000', load: 1, properties: 'Alcance, Duas Mãos, Pesada', damage: '1d8 cortante', detail: 'Grande katana com corte e alcance superiores.' },
+  { name: 'Rapieira', category: 'Arma', rarity: 'Comum', cost: '฿ 70.000', load: 1, properties: 'Acuidade', damage: '1d6 cortante ou perfurante', detail: 'Espada esbelta projetada para estocadas, com proteção de mão.' },
+  { name: 'Sabre', category: 'Arma', rarity: 'Comum', cost: '฿ 70.000', load: 1, damage: '1d6 cortante', detail: 'Espada de um gume com protetor de mão e lâmina geralmente curvada.' },
+  { name: 'Shikomizue', category: 'Arma', rarity: 'Comum', cost: '฿ 75.000', load: 1, properties: 'Acuidade', damage: '1d6 cortante', detail: 'Espada fina normalmente escondida dentro de uma bengala.' },
+  { name: 'Escopeta', category: 'Arma', rarity: 'Comum', cost: '฿ 150.000', load: 1, properties: 'Distância cone 3 m, Duas Mãos, Munição, Recarga', damage: '3d6 contundente em área', detail: 'Arma de cano duplo que libera vários projéteis esféricos.', rules: ['Gasta 10 munições esféricas por disparo.', 'Todos na área fazem Salvaguarda de Destreza; metade em sucesso se aplicável pelo Narrador.'] },
+  { name: 'Mosquete', category: 'Arma', rarity: 'Comum', cost: '฿ 100.000', load: 1, properties: 'Distância 18/24 m, Munição, Duas Mãos', detail: 'Mosquete comum cujo dano varia conforme a munição.', rules: ['Cada disparo gasta uma munição.'] },
+  { name: 'Metralhadora', category: 'Arma', rarity: 'Comum', cost: '฿ 380.000', load: 1, properties: 'Distância cone 6 m, Duas Mãos, Munição, Recarga', damage: '3d6 perfurante em área', detail: 'Arma alongada com carregador para disparar muitos projéteis rapidamente.', rules: ['Gasta 20 munições perfurantes por disparo.', 'Alvos na área fazem Salvaguarda de Destreza; metade do dano em sucesso.'] },
+  { name: 'Pistola', category: 'Arma', rarity: 'Comum', cost: '฿ 70.000', load: 1, properties: 'Distância 9/15 m, Munição', detail: 'Pistola comum cujo dano varia conforme a munição.', rules: ['Cada disparo gasta uma munição.'] },
+  { name: 'Arco/Estilingue', category: 'Arma', rarity: 'Comum', cost: '฿ 22.500', load: 1, properties: 'Distância 18/24 m, Duas Mãos, Munição', detail: 'Arma simples para disparos à distância.' },
+  { name: 'Canhão de Mão/Bazuca', category: 'Arma', rarity: 'Comum', cost: '฿ 350.000', load: 1, properties: 'Distância 21/30 m, Duas Mãos, Munição, Pesada, Recarga', detail: 'Arma pesada que dispara bolas de chumbo ou explosivas contra estruturas e navios.' },
+  { name: 'Escudo de Ferro', category: 'Arma', rarity: 'Comum', cost: '฿ 50.000', load: 1, damage: '1d4 contundente', detail: 'Escudo redondo de 30 cm para defesa ágil.', rules: ['Adiciona +2 na CR.', 'Se o ataque erra por menos de 2, o escudo recebe o dano no lugar e suporta até 100 de dano.', 'Se receber mais de 40 de dano, não poderá mais ser reparado.'] },
+  { name: 'Espada Montante', category: 'Arma', rarity: 'Comum', cost: '฿ 150.000', load: 1, properties: 'Alcance, Arma de Cerco, Duas Mãos, Pesada', damage: '2d6 cortante', detail: 'Espada enorme de até 3 metros, válida como Arma Cortante para técnicas.' },
+  { name: 'Chicote', category: 'Arma', rarity: 'Comum', cost: '฿ 7.500', load: 1, properties: 'Acuidade, Alcance', damage: '1d6 cortante', detail: 'Tira de couro ou corda entrançada presa a um cabo.' },
+  { name: 'Foice', category: 'Arma', rarity: 'Comum', cost: '฿ 50.000', load: 1, properties: 'Alcance, Duas Mãos', damage: '1d8 cortante', detail: 'Bastão com lâmina curvada; pode contar como Arma Cortante para técnicas.' },
+  { name: 'Lança', category: 'Arma', rarity: 'Comum', cost: '฿ 70.000', load: 1, properties: 'Alcance, Duas Mãos, Arremesso 6/12 m', damage: '1d8 perfurante ou 1d6 contundente', detail: 'Bastão com lâmina na ponta; pode contar como Arma Cortante para técnicas.' },
+  { name: 'Mangual', category: 'Arma', rarity: 'Comum', cost: '฿ 30.000', load: 1, properties: 'Arma de Cerco, Pesada', damage: '1d10 perfurante', detail: 'Cabo com bola de ferro espinhada presa por corrente.' },
+  { name: 'Martelo de Guerra', category: 'Arma', rarity: 'Comum', cost: '฿ 80.000', load: 1, properties: 'Arma de Cerco, Duas Mãos, Pesada', damage: '1d12 contundente', detail: 'Cabo com grande peça metálica pesada na extremidade.' },
+  { name: 'Tridente', category: 'Arma', rarity: 'Comum', cost: '฿ 70.000', load: 1, properties: 'Alcance, Duas Mãos', damage: '1d10 perfurante ou 1d6 contundente', detail: 'Bastão com três pontas na extremidade.' },
+  { name: 'Zarabatana', category: 'Arma', rarity: 'Comum', cost: '฿ 8.000', load: 1, properties: 'Distância 6/9 m', detail: 'Cano pequeno feito para atirar dardos venenosos silenciosamente.' },
+  { name: 'Shuriken', category: 'Arma', rarity: 'Comum', cost: '฿ 500/unidade', load: 0.1, properties: 'Acuidade, Arremesso 6/12 m', damage: '1d4 perfurante', detail: 'Pequena estrela de metal afiada.' },
+  { name: 'Bastão', category: 'Arma', rarity: 'Comum', cost: '฿ 40.000', load: 1, properties: 'Alcance, Duas Mãos', damage: 'Marcial contundente', detail: 'Pedaço de madeira ou metal circular usado como arma marcial.' },
+  { name: 'Kanabo/Tacape', category: 'Arma', rarity: 'Comum', cost: '฿ 60.000', load: 1, properties: 'Arma de Cerco, Duas Mãos, Pesada', damage: 'Marcial contundente ou perfurante', detail: 'Cabo pesado com extremidade grossa, às vezes coberta de espinhos.' },
+  { name: 'Luva de Ferro/Espinhos', category: 'Arma', rarity: 'Comum', cost: '฿ 20.000', load: 1, damage: 'Marcial contundente ou perfurante', detail: 'Luva com placa metálica sobre os dedos, podendo ter espinhos.' },
+  { name: 'Nunchaku', category: 'Arma', rarity: 'Comum', cost: '฿ 25.000', load: 1, properties: 'Acuidade', damage: 'Marcial contundente', detail: 'Dois pedaços de madeira ou metal conectados por corrente.' },
+  { name: 'Par de Tonfas', category: 'Arma', rarity: 'Comum', cost: '฿ 42.000', load: 1, properties: 'Duas Mãos', damage: 'Marcial contundente', detail: 'Dois bastões compridos com pega perpendicular.' },
+
+  { name: 'Bola de Chumbo', category: 'Munição', rarity: 'Comum', cost: '฿ 15.000/unidade', load: 0.1, properties: 'Arma de Cerco, Pesada', damage: '3d10 contundente', detail: 'Munição de canhões e bazucas com grande poder destrutivo.' },
+  { name: 'Bola Explosiva', category: 'Munição', rarity: 'Comum', cost: '฿ 32.000/unidade', load: 0.1, properties: 'Arma de Cerco, Pesada', damage: '3d10 contundente + 2d6 fogo', detail: 'Munição de canhões e bazucas que explode em área de 3 m de raio.', rules: ['Impõe Salvaguarda de Destreza com CD igual à das Técnicas de Combate.'] },
+  { name: 'Dardo', category: 'Munição', rarity: 'Comum', cost: '฿ 200/unidade', load: 0.1, damage: '1 perfurante', detail: 'Pequena munição com agulha para zarabatana.' },
+  { name: 'Dinamite', category: 'Munição', rarity: 'Comum', cost: '฿ 25.000', load: 1, properties: 'Arremesso 6 m', damage: '3d6 contundente', detail: 'Banana de dinamite que pode ser acesa e arremessada.', rules: ['Criaturas a até 1,5 m fazem Salvaguarda de Destreza CD 15; metade em sucesso.', 'Cada banana adicional aumenta o dano em 1d6 até 10d6 e o raio em 1,5 m até 6 m.', 'Pode usar estopim longo de 1 a 6 rodadas.'] },
+  { name: 'Flecha', category: 'Munição', rarity: 'Comum', cost: '฿ 500/unidade', load: 0.1, damage: '1d6 perfurante', detail: 'Vareta de madeira com ponta de ferro perfurante.' },
+  { name: 'Munição de Kairoseki', category: 'Munição', rarity: 'Mercado Negro', cost: '฿ 1.000.000/unidade', load: 0.1, damage: '1d8 perfurante', detail: 'Munição feita de kairoseki para armas de disparo.', rules: ['Ao acertar usuário de Akuma no Mi, anula poderes e impõe Enfraquecido.'] },
+  { name: 'Munição Esférica', category: 'Munição', rarity: 'Comum', cost: '฿ 500/unidade', load: 0.1, damage: '1d6 contundente', detail: 'Munição simples para pistolas e mosquetes.' },
+  { name: 'Munição para Estilingue', category: 'Munição', rarity: 'Variável', cost: 'Variável', load: 0.1, damage: '1d6 a 1d8 contundente, cortante ou perfurante', detail: 'Objeto pequeno que caiba no suporte do estilingue.', rules: ['Objetos diferentes de munições esféricas reduzem alcance normal e máximo pela metade.'] },
+  { name: 'Munição Perfurante', category: 'Munição', rarity: 'Comum', cost: '฿ 1.000/unidade', load: 0.1, damage: '1d8 perfurante', detail: 'Munição simples perfurante para armas de disparo.' },
+
+  { name: 'Bote', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 160.000', load: 1, capacity: '210 kg', detail: 'Barco pequeno; deslocamento por correnteza.' },
+  { name: 'Barco', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 200.000', load: 1, capacity: '240 kg', detail: 'Embarcação simples; deslocamento por correnteza.' },
+  { name: 'Barco a Remo', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 240.000', load: 1, capacity: '220 kg', detail: 'Embarcação a remo; correnteza + 2 nós ou 4 km/h.', rules: ['Pesa 45 kg se carregado em terra.'] },
+  { name: 'Burro ou Mula', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 300.000', load: 1, capacity: '210 kg', detail: 'Montaria com deslocamento de 12 m.' },
+  { name: 'Camelo', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 1.000.000', load: 1, capacity: '240 kg', detail: 'Montaria com deslocamento de 15 m.' },
+  { name: 'Cavalo de Montaria', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 2.000.000', load: 1, capacity: '220 kg', detail: 'Montaria com deslocamento de 18 m.' },
+  { name: 'Cavalo Pesado', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 1.000.000', load: 1, capacity: '270 kg', detail: 'Montaria pesada com deslocamento de 12 m.' },
+  { name: 'Elefante', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 6.000.000', load: 1, capacity: '660 kg', detail: 'Montaria enorme com deslocamento de 12 m.' },
+  { name: 'Alforje', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 15.000', load: 4, detail: 'Arreio de carga para montarias; peso 4 kg.' },
+  { name: 'Carroça', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 30.000', load: 100, detail: 'Veículo de tração; peso 100 kg.' },
+  { name: 'Carruagem', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 80.000', load: 300, detail: 'Veículo de tração; peso 300 kg.' },
+  { name: 'Freio e Rédea', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 10.000', load: 0.5, detail: 'Equipamento para controle de montaria; peso 0,5 kg.' },
+  { name: 'Trenó', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 2.000', load: 150, detail: 'Veículo de tração para terreno apropriado; peso 150 kg.' },
+  { name: 'Sela Compacta', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 100', load: 7.5, detail: 'Sela compacta; peso 7,5 kg.' },
+  { name: 'Sela Exótica', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 6.000', load: 20, detail: 'Sela para montarias incomuns; peso 20 kg.' },
+  { name: 'Sela Militar', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 2.000', load: 15, detail: 'Sela de combate que prende melhor o cavaleiro.', rules: ['Concede vantagem em testes para manter-se montado.', 'Necessária para montarias aquáticas e voadoras.'] },
+  { name: 'Sela de Viagem', category: 'Montaria e veículo', rarity: 'Comum', cost: '฿ 1.000', load: 12.5, detail: 'Sela de viagem; peso 12,5 kg.' },
 ]

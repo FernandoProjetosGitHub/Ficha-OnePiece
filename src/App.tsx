@@ -27,6 +27,8 @@ import {
   basicAbilities,
   combatStyles,
   equipmentItems,
+  queryRules,
+  relatedRules,
   professions,
   skills,
   species,
@@ -64,6 +66,7 @@ function App() {
     itemCategories,
     filteredItems,
     registeredSlots,
+    proficiencyPlan,
     updateSheet,
     updateAttribute,
     updateSkills,
@@ -80,6 +83,7 @@ function App() {
     changeItemQuantity,
     removeItem,
   } = useCharacterSheet()
+  const availableSkillOptions = skills.filter((skill) => proficiencyPlan.availableSkills.includes(skill.name))
 
   return (
     <main className="app" data-theme={theme}>
@@ -246,7 +250,10 @@ function App() {
 
           <div className="section-block">
             <h3>Regras relacionadas</h3>
-            <DetailsCard title={`Detalhes da espécie: ${selectedSpecies.name}`} eyebrow="PDF · Capítulo 2" open>
+            <DetailsCard title="Resumo das regras de criação" eyebrow="PDF · Consulta rápida">
+              <ExpandableInfoList items={relatedRules} />
+            </DetailsCard>
+            <DetailsCard title={`Detalhes da espécie: ${selectedSpecies.name}`} eyebrow="PDF · Capítulo 2">
               <InfoList items={[
                 `PV base: ${selectedSpecies.hpBase}`,
                 `Tamanho: ${selectedSpecies.size}`,
@@ -272,7 +279,7 @@ function App() {
                 ...selectedStyle.features.map((feature) => `Característica: ${feature}`),
               ]} />
             </DetailsCard>
-            <DetailsCard title={`Detalhes da profissão: ${selectedProfession.name}`} eyebrow="PDF · Ofícios" open>
+            <DetailsCard title={`Detalhes da profissão: ${selectedProfession.name}`} eyebrow="PDF · Ofícios">
               <InfoList items={[
                 `Perícia Especial do Ofício: ${selectedProfession.specialSkill}`,
                 `Proficiências: ${selectedProfession.proficiencies}`,
@@ -335,16 +342,9 @@ function App() {
 
           <div className="section-block">
             <h3>Regras de consulta</h3>
-          <DetailsCard title="Detalhes das regras de cálculo" eyebrow="PV · PP · CR · Exaustão">
-            <InfoList items={[
-              'Modificador de atributo: subtraia 10, divida por 2 e arredonde para baixo.',
-              'PV inicial: dado máximo do estilo + PV base da espécie + modificador de Constituição, mínimo de 1 no modificador aplicado.',
-              'PV sugerido usa média fixa dos níveis seguintes para evitar quebrar a ficha durante criação.',
-              'PP: 2 por nível de personagem; descanso longo recupera todos, salvo restrições por exaustão.',
-              'CD de técnica: 8 + bônus de proficiência + modificador do atributo primário escolhido.',
-              'Exaustão reduz testes d20 em 2 por nível e deslocamento em 1,5 m por nível; 6º nível causa desmaio.',
-            ]} />
-          </DetailsCard>
+            <DetailsCard title="Detalhes das regras de cálculo" eyebrow="PV · PP · CR · Exaustão">
+              <ExpandableInfoList items={queryRules} />
+            </DetailsCard>
           </div>
         </Panel>
 
@@ -355,10 +355,19 @@ function App() {
             disabled={selectionsLocked}
             label="Proficiências marcadas"
             onChange={updateSkills}
-            options={skills.map((skill) => ({ value: skill.name, label: skill.name, detail: attributes[skill.attribute] }))}
+            options={availableSkillOptions.map((skill) => ({ value: skill.name, label: skill.name, detail: attributes[skill.attribute] }))}
             values={sheet.proficientSkills}
-            helper="Segure Ctrl no computador para escolher várias; no celular, use a lista do sistema."
+            helper={`Limite atual: ${sheet.proficientSkills.length}/${proficiencyPlan.maxChoices}. A lista combina espécie, estilo e profissão.`}
           />
+            <DetailsCard title="Fontes das proficiências" eyebrow="Limitador automático">
+              <ExpandableInfoList
+                items={proficiencyPlan.rules.map((rule) => ({
+                  name: rule.source,
+                  detail: rule.note,
+                  bullets: rule.options,
+                }))}
+              />
+            </DetailsCard>
           </div>
           <div className="section-block">
             <h3>Totais e detalhes</h3>
@@ -397,7 +406,7 @@ function App() {
 
           <div className="section-block">
             <h3>Técnicas por nível</h3>
-          <DetailsCard title={`Técnicas do estilo: ${selectedStyle.name}`} eyebrow="Progressão por nível" open>
+          <DetailsCard title={`Técnicas do estilo: ${selectedStyle.name}`} eyebrow="Progressão por nível">
             <div className="technique-list">
               {selectedStyle.techniques.map((technique) => (
                 <details className="choice-detail-card" key={`${technique.level}-${technique.combat}`}>
@@ -452,8 +461,13 @@ function App() {
                     <span>{item.rarity} · {item.cost}</span>
                     <strong>{item.name}</strong>
                   </summary>
-                  <p>{item.detail}</p>
-                  <small>{item.capacity ?`Capacidade: ${item.capacity}` : `Slots auxiliares: ${item.load}`}</small>
+                  <InfoList items={[
+                    item.detail,
+                    item.properties ? `Propriedades: ${item.properties}` : '',
+                    item.damage ? `Dano: ${item.damage}` : '',
+                    item.capacity ? `Capacidade: ${item.capacity}` : `Slots/peso registrado: ${item.load}`,
+                    ...(item.rules ?? []),
+                  ].filter(Boolean)} />
                 </details>
                 <button disabled={selectionsLocked} onClick={() => addItem(item.name)} type="button">
                   <Plus size={18} />Adicionar
@@ -465,17 +479,28 @@ function App() {
 
           <div className="section-block">
             <h3>Itens na ficha</h3>
-          <DetailsCard title="Itens selecionados" eyebrow="Pode remover quando destravado" open>
+          <DetailsCard title="Itens selecionados" eyebrow="Pode remover quando destravado">
             <div className="inventory-list">
               {sheet.inventoryEntries.length === 0 && <p className="empty-copy">Nenhum item selecionado.</p>}
               {sheet.inventoryEntries.map((entry) => {
                 const item = equipmentItems.find((candidate) => candidate.name === entry.itemName)
                 return (
                   <article className="inventory-entry" key={entry.itemName}>
-                    <div>
-                      <strong>{entry.itemName}</strong>
-                      <span>{item?.category} · qtd. {entry.quantity}</span>
-                    </div>
+                    <details className="inventory-detail">
+                      <summary>
+                        <strong>{entry.itemName}</strong>
+                        <span>{item?.category} · qtd. {entry.quantity}</span>
+                      </summary>
+                      {item && (
+                        <InfoList items={[
+                          item.detail,
+                          item.properties ? `Propriedades: ${item.properties}` : '',
+                          item.damage ? `Dano: ${item.damage}` : '',
+                          item.capacity ? `Capacidade: ${item.capacity}` : `Slots/peso registrado: ${item.load}`,
+                          ...(item.rules ?? []),
+                        ].filter(Boolean)} />
+                      )}
+                    </details>
                     <div className="quantity-actions">
                       <button disabled={selectionsLocked} onClick={() => changeItemQuantity(entry.itemName, -1)} type="button"><Minus size={16} /></button>
                       <button disabled={selectionsLocked} onClick={() => changeItemQuantity(entry.itemName, 1)} type="button"><Plus size={16} /></button>

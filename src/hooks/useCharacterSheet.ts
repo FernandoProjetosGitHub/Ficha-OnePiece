@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { equipmentItems, combatStyles, professions, species, type AttributeKey } from '../data/rules'
+import { equipmentItems, combatStyles, professions, skills, species, type AttributeKey } from '../data/rules'
 import { initialSheet } from '../data/initialSheet'
 import {
   attackBonus,
@@ -12,6 +12,7 @@ import {
   techniqueDifficulty,
 } from '../utils/calculations'
 import type { Confirmation, Sheet, Theme } from '../types/sheet'
+import { buildProficiencyPlan, type ProficiencyPlan } from '../utils/proficiencies'
 
 export function useCharacterSheet() {
   const [sheet, setSheet] = useState<Sheet>(initialSheet)
@@ -32,6 +33,10 @@ export function useCharacterSheet() {
   const selectedProfession = useMemo(
     () => professions.find((item) => item.name === sheet.professionName) ?? professions[0],
     [sheet.professionName],
+  )
+  const proficiencyPlan = useMemo(
+    () => buildProficiencyPlan(selectedStyle, selectedProfession, selectedSpecies, skills),
+    [selectedStyle, selectedProfession, selectedSpecies],
   )
 
   const level = Math.min(20, Math.max(1, Number(sheet.level) || 1))
@@ -67,10 +72,23 @@ export function useCharacterSheet() {
     }))
   }
 
+  function sanitizeProficientSkills(nextSkills: string[], plan: ProficiencyPlan) {
+    const allowed = new Set(plan.availableSkills)
+    const unique = Array.from(new Set(nextSkills))
+    return unique.filter((skillName) => allowed.has(skillName)).slice(0, plan.maxChoices)
+  }
+
   function updateSkills(nextSkills: string[]) {
     if (selectionsLocked) return
-    setSheet((current) => ({ ...current, proficientSkills: nextSkills }))
-    setNotice(nextSkills.length ?'Perícias atualizadas.' : 'Todas as perícias foram desmarcadas.')
+    const limitedSkills = sanitizeProficientSkills(nextSkills, proficiencyPlan)
+    setSheet((current) => ({ ...current, proficientSkills: limitedSkills }))
+    setNotice(
+      limitedSkills.length < nextSkills.length
+        ? `Limite aplicado: ${proficiencyPlan.maxChoices} proficiências permitidas pelas escolhas atuais.`
+        : limitedSkills.length
+          ? 'Perícias atualizadas.'
+          : 'Todas as perícias foram desmarcadas.',
+    )
   }
 
   function requestLockToggle() {
@@ -95,17 +113,25 @@ export function useCharacterSheet() {
 
   function setSpecies(value: string) {
     const nextSpecies = species.find((item) => item.name === value) ?? species[0]
+    const nextPlan = buildProficiencyPlan(selectedStyle, selectedProfession, nextSpecies, skills)
     setSheet((current) => ({
       ...current,
       speciesName: nextSpecies.name,
       variant: nextSpecies.variants[0] ?? '',
+      proficientSkills: sanitizeProficientSkills(current.proficientSkills, nextPlan),
     }))
     setNotice(`Espécie definida: ${nextSpecies.name}.`)
   }
 
   function setStyle(value: string) {
     const style = combatStyles.find((item) => item.name === value) ?? combatStyles[0]
-    setSheet((current) => ({ ...current, styleName: style.name, primary: style.primary[0] }))
+    const nextPlan = buildProficiencyPlan(style, selectedProfession, selectedSpecies, skills)
+    setSheet((current) => ({
+      ...current,
+      styleName: style.name,
+      primary: style.primary[0],
+      proficientSkills: sanitizeProficientSkills(current.proficientSkills, nextPlan),
+    }))
     setNotice(`Estilo definido: ${style.name}.`)
   }
 
@@ -115,8 +141,14 @@ export function useCharacterSheet() {
   }
 
   function setProfession(value: string) {
-    updateSheet('professionName', value)
-    setNotice(`Profissão definida: ${value}.`)
+    const profession = professions.find((item) => item.name === value) ?? professions[0]
+    const nextPlan = buildProficiencyPlan(selectedStyle, profession, selectedSpecies, skills)
+    setSheet((current) => ({
+      ...current,
+      professionName: profession.name,
+      proficientSkills: sanitizeProficientSkills(current.proficientSkills, nextPlan),
+    }))
+    setNotice(`Profissão definida: ${profession.name}.`)
   }
 
   function addItem(itemName: string) {
@@ -180,6 +212,7 @@ export function useCharacterSheet() {
     itemCategories,
     filteredItems,
     registeredSlots,
+    proficiencyPlan,
     updateSheet,
     updateAttribute,
     updateSkills,

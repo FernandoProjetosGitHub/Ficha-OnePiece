@@ -423,8 +423,8 @@ select:disabled {
 
 .panel {
   display: grid;
-  gap: 12px;
-  padding: 14px;
+  gap: 10px;
+  padding: 12px;
 }
 
 .panel h2 {
@@ -499,8 +499,8 @@ select:disabled {
 
 .section-block {
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: 8px;
+  padding: 10px;
   border: 1px solid rgba(8, 126, 139, 0.12);
   border-radius: 8px;
   background: rgba(8, 126, 139, 0.04);
@@ -530,7 +530,7 @@ select:disabled {
 }
 
 .multi-choice select {
-  min-height: 128px;
+  min-height: 104px;
   padding: 8px;
 }
 
@@ -584,7 +584,7 @@ select:disabled {
 }
 
 .details-card summary {
-  min-height: 54px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -626,7 +626,7 @@ select:disabled {
 }
 
 .details-body {
-  padding: 0 14px 14px;
+  padding: 0 12px 12px;
 }
 
 .info-list {
@@ -822,8 +822,8 @@ select:disabled {
 .choice-detail-card,
 .item-card {
   display: grid;
-  gap: 8px;
-  padding: 12px;
+  gap: 7px;
+  padding: 10px;
 }
 
 .choice-detail-card {
@@ -914,9 +914,23 @@ select:disabled {
   padding: 10px;
 }
 
-.inventory-entry div:first-child {
+.inventory-detail {
+  min-width: 0;
+}
+
+.inventory-detail summary {
   display: grid;
   gap: 3px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.inventory-detail summary::-webkit-details-marker {
+  display: none;
+}
+
+.inventory-detail .info-list {
+  margin-top: 10px;
 }
 
 .quantity-actions {

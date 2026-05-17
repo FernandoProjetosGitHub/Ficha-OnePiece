@@ -357,7 +357,7 @@ function App() {
             onChange={updateSkills}
             options={availableSkillOptions.map((skill) => ({ value: skill.name, label: skill.name, detail: attributes[skill.attribute] }))}
             values={sheet.proficientSkills}
-            helper={`Limite atual: ${sheet.proficientSkills.length}/${proficiencyPlan.maxChoices}. A lista combina espécie, estilo e profissão.`}
+            helper={`Limite atual: ${sheet.proficientSkills.length}/${proficiencyPlan.maxChoices}. As cotas de espécie, estilo e profissão são conferidas separadamente.`}
           />
             <DetailsCard title="Fontes das proficiências" eyebrow="Limitador automático">
               <ExpandableInfoList
@@ -370,22 +370,24 @@ function App() {
             </DetailsCard>
           </div>
           <div className="section-block">
-            <h3>Totais e detalhes</h3>
-          <div className="skills-list">
-            {skills.map((skill) => {
-              const proficient = sheet.proficientSkills.includes(skill.name)
-              return (
-                <article className="skill-row" key={skill.name}>
-                  <span>{skill.name}</span>
-                  <strong>{formatModifier(skillTotal(skill.attribute, sheet.attributes, proficient, level))}</strong>
-                  <details>
-                    <summary>Detalhes</summary>
-                    <p>{attributes[skill.attribute]} · {skill.detail}</p>
-                  </details>
-                </article>
-              )
-            })}
-          </div>
+            <h3>Resultados de perícias</h3>
+            <DetailsCard title="Lista de perícias calculadas" eyebrow="Clique para consultar">
+              <div className="skills-list">
+                {skills.map((skill) => {
+                  const proficient = sheet.proficientSkills.includes(skill.name)
+                  return (
+                    <article className="skill-row" key={skill.name}>
+                      <span>{skill.name}</span>
+                      <strong>{formatModifier(skillTotal(skill.attribute, sheet.attributes, proficient, level))}</strong>
+                      <details>
+                        <summary>Detalhes</summary>
+                        <p>{attributes[skill.attribute]} · {skill.detail}</p>
+                      </details>
+                    </article>
+                  )
+                })}
+              </div>
+            </DetailsCard>
           </div>
         </Panel>
 

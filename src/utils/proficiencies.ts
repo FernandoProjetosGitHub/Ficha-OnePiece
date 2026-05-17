@@ -78,3 +78,45 @@ export function buildProficiencyPlan(
     rules,
   }
 }
+
+function canDistributeSkills(skillNames: string[], rules: ProficiencyChoiceRule[]) {
+  const remaining = rules.map((rule) => rule.max)
+  const orderedSkills = [...skillNames].sort((left, right) => {
+    const leftOptions = rules.filter((rule) => rule.options.includes(left)).length
+    const rightOptions = rules.filter((rule) => rule.options.includes(right)).length
+    return leftOptions - rightOptions
+  })
+
+  function assign(index: number): boolean {
+    if (index >= orderedSkills.length) return true
+
+    const skillName = orderedSkills[index]
+
+    for (let ruleIndex = 0; ruleIndex < rules.length; ruleIndex += 1) {
+      if (remaining[ruleIndex] <= 0 || !rules[ruleIndex].options.includes(skillName)) continue
+
+      remaining[ruleIndex] -= 1
+      if (assign(index + 1)) return true
+      remaining[ruleIndex] += 1
+    }
+
+    return false
+  }
+
+  return assign(0)
+}
+
+export function limitProficiencyChoices(nextSkills: string[], plan: ProficiencyPlan) {
+  const allowed = new Set(plan.availableSkills)
+  const unique = Array.from(new Set(nextSkills)).filter((skillName) => allowed.has(skillName))
+  const limited: string[] = []
+
+  for (const skillName of unique) {
+    const candidate = [...limited, skillName]
+    if (candidate.length <= plan.maxChoices && canDistributeSkills(candidate, plan.rules)) {
+      limited.push(skillName)
+    }
+  }
+
+  return limited
+}

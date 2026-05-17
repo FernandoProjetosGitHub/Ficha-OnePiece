@@ -12,7 +12,7 @@ import {
   techniqueDifficulty,
 } from '../utils/calculations'
 import type { Confirmation, Sheet, Theme } from '../types/sheet'
-import { buildProficiencyPlan, type ProficiencyPlan } from '../utils/proficiencies'
+import { buildProficiencyPlan, limitProficiencyChoices } from '../utils/proficiencies'
 
 export function useCharacterSheet() {
   const [sheet, setSheet] = useState<Sheet>(initialSheet)
@@ -72,15 +72,9 @@ export function useCharacterSheet() {
     }))
   }
 
-  function sanitizeProficientSkills(nextSkills: string[], plan: ProficiencyPlan) {
-    const allowed = new Set(plan.availableSkills)
-    const unique = Array.from(new Set(nextSkills))
-    return unique.filter((skillName) => allowed.has(skillName)).slice(0, plan.maxChoices)
-  }
-
   function updateSkills(nextSkills: string[]) {
     if (selectionsLocked) return
-    const limitedSkills = sanitizeProficientSkills(nextSkills, proficiencyPlan)
+    const limitedSkills = limitProficiencyChoices(nextSkills, proficiencyPlan)
     setSheet((current) => ({ ...current, proficientSkills: limitedSkills }))
     setNotice(
       limitedSkills.length < nextSkills.length
@@ -118,7 +112,7 @@ export function useCharacterSheet() {
       ...current,
       speciesName: nextSpecies.name,
       variant: nextSpecies.variants[0] ?? '',
-      proficientSkills: sanitizeProficientSkills(current.proficientSkills, nextPlan),
+      proficientSkills: limitProficiencyChoices(current.proficientSkills, nextPlan),
     }))
     setNotice(`Espécie definida: ${nextSpecies.name}.`)
   }
@@ -130,7 +124,7 @@ export function useCharacterSheet() {
       ...current,
       styleName: style.name,
       primary: style.primary[0],
-      proficientSkills: sanitizeProficientSkills(current.proficientSkills, nextPlan),
+      proficientSkills: limitProficiencyChoices(current.proficientSkills, nextPlan),
     }))
     setNotice(`Estilo definido: ${style.name}.`)
   }
@@ -146,7 +140,7 @@ export function useCharacterSheet() {
     setSheet((current) => ({
       ...current,
       professionName: profession.name,
-      proficientSkills: sanitizeProficientSkills(current.proficientSkills, nextPlan),
+      proficientSkills: limitProficiencyChoices(current.proficientSkills, nextPlan),
     }))
     setNotice(`Profissão definida: ${profession.name}.`)
   }

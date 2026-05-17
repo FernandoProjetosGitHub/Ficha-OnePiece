@@ -14,26 +14,6 @@ export function Field({ label, ...props }: FieldProps) {
   )
 }
 
-type SelectFieldProps = ComponentProps<'select'> & {
-  label: string
-  options: Array<string | { value: string; label: string }>
-}
-
-export function SelectField({ label, options, ...props }: SelectFieldProps) {
-  return (
-    <label className="field">
-      <span>{label}</span>
-      <select {...props}>
-        {options.map((option) => (
-          <option key={typeof option === 'string' ? option : option.value} value={typeof option === 'string' ? option : option.value}>
-            {typeof option === 'string' ? option : option.label}
-          </option>
-        ))}
-      </select>
-    </label>
-  )
-}
-
 type TextAreaFieldProps = ComponentProps<'textarea'> & {
   label: string
 }

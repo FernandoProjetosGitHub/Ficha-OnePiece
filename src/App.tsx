@@ -21,7 +21,7 @@
 import { ChoiceSelect, MultiChoiceSelect } from './components/ChoiceSelect'
 import { DetailsCard } from './components/DetailsCard'
 import { Field, TextAreaField } from './components/Field'
-import { ExpandableInfoList, InfoList, MiniCalc, Panel, Stat } from './components/SheetPrimitives'
+import { ExpandableInfoList, InfoList, MiniCalc, Panel, ResourceMeter, Stat } from './components/SheetPrimitives'
 import {
   attributes,
   basicAbilities,
@@ -84,6 +84,9 @@ function App() {
     removeItem,
   } = useCharacterSheet()
   const availableSkillOptions = skills.filter((skill) => proficiencyPlan.availableSkills.includes(skill.name))
+  const hpPercent = (sheet.currentHp / Math.max(1, suggestedHp + sheet.temporaryHp)) * 100
+  const ppPercent = (sheet.currentPp / Math.max(1, maxPp)) * 100
+  const exhaustionPercent = (sheet.exhaustion / 6) * 100
 
   return (
     <main className="app" data-theme={theme}>
@@ -118,11 +121,14 @@ function App() {
       <header className="hero">
         <div className="hero-copy">
           <span className="overline"><Anchor size={16} /> Registro de Aventureiro</span>
-          <h1>Ficha online OP RPG</h1>
-          <p>
-            Um diário mecânico para personagens originais: fiel aos PDFs, rápido no celular
-            e sem prender o jogador à ideia de tripulação fixa.
-          </p>
+          <h1>{sheet.name || 'Ficha online OP RPG'}</h1>
+          <p>{sheet.concept || 'Personagem original pronto para navegar por aventuras, perigos e escolhas difíceis.'}</p>
+          <div className="hero-tags" aria-label="Resumo do personagem">
+            <span>Nível {level}</span>
+            <span>{selectedSpecies.name}</span>
+            <span>{selectedStyle.name}</span>
+            <span>{selectedProfession.name}</span>
+          </div>
         </div>
         <div className="hero-card">
           <div className="portrait-frame">
@@ -154,8 +160,23 @@ function App() {
         <Stat icon={<Dice6 />} label="Prof." value={formatModifier(proficiency)} hint={`CD técnica ${techniqueCd}`} />
       </section>
 
+      <section className="resource-board" aria-label="Estado atual do personagem">
+        <ResourceMeter label="Vitalidade" value={`${sheet.currentHp}/${suggestedHp}`} hint={`${sheet.temporaryHp} PV temporário`} percent={hpPercent} />
+        <ResourceMeter label="Poder" value={`${sheet.currentPp}/${maxPp}`} hint="Pontos de Poder disponíveis" percent={ppPercent} tone="gold" />
+        <ResourceMeter label="Exaustão" value={`${sheet.exhaustion}/6`} hint="6º nível causa desmaio" percent={exhaustionPercent} tone="red" />
+      </section>
+
+      <nav className="sheet-nav" aria-label="Navegação da ficha">
+        <a href="#identidade">Identidade</a>
+        <a href="#criacao">Criação</a>
+        <a href="#atributos">Atributos</a>
+        <a href="#pericias">Perícias</a>
+        <a href="#tecnicas">Técnicas</a>
+        <a href="#inventario">Inventário</a>
+      </nav>
+
       <section className="sheet-grid">
-        <Panel title="Identidade" icon={<UserRound />}>
+        <Panel id="identidade" title="Identidade" icon={<UserRound />}>
           <div className="section-block">
             <h3>Apresentação</h3>
             <div className="form-grid">
@@ -181,7 +202,7 @@ function App() {
           </div>
         </Panel>
 
-        <Panel title="Criação" icon={<BookOpen />}>
+        <Panel id="criacao" title="Criação" icon={<BookOpen />}>
           <div className="section-block">
             <h3>Origem mecânica</h3>
             <ChoiceSelect
@@ -290,7 +311,7 @@ function App() {
           </div>
         </Panel>
 
-        <Panel title="Atributos e Recursos" icon={<Swords />}>
+        <Panel id="atributos" title="Atributos e Recursos" icon={<Swords />}>
           <div className="section-block">
             <h3>Atributos base</h3>
           <div className="attribute-grid">
@@ -348,7 +369,7 @@ function App() {
           </div>
         </Panel>
 
-        <Panel title="Perícias" icon={<Dice6 />}>
+        <Panel id="pericias" title="Perícias" icon={<Dice6 />}>
           <div className="section-block">
             <h3>Escolhas de proficiência</h3>
           <MultiChoiceSelect
@@ -391,7 +412,7 @@ function App() {
           </div>
         </Panel>
 
-        <Panel title="Habilidades e Técnicas" icon={<Sparkles />}>
+        <Panel id="tecnicas" title="Habilidades e Técnicas" icon={<Sparkles />}>
           <div className="section-block">
             <h3>Habilidades básicas</h3>
           <DetailsCard title="Habilidades Básicas disponíveis" eyebrow="HB gerais e categorias">
@@ -436,7 +457,7 @@ function App() {
           </div>
         </Panel>
 
-        <Panel title="Inventário e Biblioteca" icon={<PackageCheck />}>
+        <Panel id="inventario" title="Inventário e Biblioteca" icon={<PackageCheck />}>
           <div className="section-block">
             <h3>Resumo de carga</h3>
           <div className="inventory-summary">

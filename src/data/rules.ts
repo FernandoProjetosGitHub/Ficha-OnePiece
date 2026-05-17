@@ -41,7 +41,13 @@ export type Profession = {
   specialSkill: string
   proficiencies: string
   items: string
-  details: string[]
+  details: ProfessionFeature[]
+}
+
+export type ProfessionFeature = {
+  name: string
+  detail: string
+  bullets?: string[]
 }
 
 export type EquipmentItem = {
@@ -547,17 +553,131 @@ export const combatStyles: CombatStyle[] = [
 ]
 
 export const professions: Profession[] = [
-  { name: 'Adestrador', specialSkill: 'Lidar com Animais', proficiencies: 'Ferramentas de Adestrador; escolha 2 entre Acrobacia, Atuação, Intuição, Percepção, Persuasão e Sobrevivência.', items: 'Ferramentas de Adestrador, mochila pequena e 30 rações para animais.', details: ['Adestrar Animais', 'Vínculo Animal', 'Treinamento Animal'] },
-  { name: 'Arqueólogo', specialSkill: 'História Perdida', proficiencies: 'Ferramentas de Arqueólogo e perícias ligadas a pesquisa.', items: 'Ferramentas de Arqueólogo e itens de estudo.', details: ['Poneglyphs', 'Tesouros Perdidos'] },
-  { name: 'Caçador de Recompensas', specialSkill: 'Caça', proficiencies: 'Ferramentas de Caçador de Recompensas e perícias de investigação/rastreamento.', items: 'Itens de caçada e contratos.', details: ['Contratos Clandestinos', 'Informações Confiáveis', 'Alvo Marcado'] },
-  { name: 'Carpinteiro', specialSkill: 'Carpintaria', proficiencies: 'Ferramentas de Carpinteiro e perícias de construção.', items: 'Ferramentas de Carpinteiro.', details: ['Conserto em Madeira', 'Confecção Rápida', 'Reparo Emergencial', 'Corpo de Construtor'] },
-  { name: 'Combatente', specialSkill: 'Noção de Batalha', proficiencies: 'Perícias de análise, comando e combate.', items: 'Itens de combate e ferramentas pertinentes.', details: ['Comando Rápido', 'Avaliação', 'Conhecimento de Combate'] },
-  { name: 'Cozinheiro', specialSkill: 'Gastronomia', proficiencies: 'Ferramentas de Cozinheiro; escolha 2 entre Atuação, Intuição, Persuasão, Prestidigitação, Provocação e Sobrevivência.', items: 'Ferramentas de Cozinheiro e mochila pequena.', details: ['Refeição do Chef', 'Nutrição Superior', 'Preparo Perfeito'] },
-  { name: 'Engenheiro', specialSkill: 'Engenharia', proficiencies: 'Ferramentas de Engenheiro e perícias de tecnologia/construção.', items: 'Ferramentas e materiais de engenhoca.', details: ['Aprimorar Equipamento', 'Criar Engenhoca', 'Construir Robô'] },
-  { name: 'Médico', specialSkill: 'Medicina', proficiencies: 'Ferramentas de Médico e perícias ligadas a tratamento.', items: 'Ferramentas de Médico e suprimentos.', details: ['Controle de Doenças', 'Tratar Ferimentos', 'Tratar Doenças', 'Paramedicina'] },
-  { name: 'Músico', specialSkill: 'Canção', proficiencies: 'Instrumentos musicais e perícias performáticas.', items: 'Instrumento e ferramentas de músico.', details: ['Alma de Artista', 'Confusão', 'Espetáculo', 'Showman'] },
-  { name: 'Navegador', specialSkill: 'Navegação', proficiencies: 'Ferramentas de Navegador e perícias de orientação.', items: 'Ferramentas de Navegador.', details: ['Sempre Informado', 'Navegação', 'Criar Mapa', 'Mente Afiada'] },
-  { name: 'Timoneiro', specialSkill: 'Pilotagem de Embarcação', proficiencies: 'Ferramentas e perícias de condução marítima.', items: 'Ferramentas de timoneiro.', details: ['Combate Marítimo', 'Manobrar Desastres Naturais', 'Braço de Timoneiro'] },
+  {
+    name: 'Adestrador',
+    specialSkill: 'Lidar com Animais',
+    proficiencies: 'Ferramentas de Adestrador; escolha 2 entre Acrobacia, Atuação, Intuição, Percepção, Persuasão e Sobrevivência.',
+    items: 'Ferramentas de Adestrador, mochila pequena e 30 rações para animais.',
+    details: [
+      { name: 'Adestrar Animais', detail: 'Permite tentar adestrar animais selvagens com Lidar com Animais. A CD base é 10 + Nível de Desafio do alvo e o animal ajuda por 24 horas se for controlado.', bullets: ['Pode montar e usar habilidades do animal conforme a situação.', 'Dano, ordens autodestrutivas ou ameaça direta podem encerrar o controle.'] },
+      { name: 'Vínculo Animal', detail: 'Escolhe um único animal como Animal Vinculado, treinado diariamente para acompanhar o personagem e evoluir com a graduação do ofício.', bullets: ['Antes da graduação Profissional, comandar o animal exige ação.', 'O vínculo melhora PV, CR e dano adicional conforme a tabela da profissão.'] },
+      { name: 'Treinamento Animal', detail: 'Conhecimento único da profissão principal. Permite ensinar treinamentos conhecidos ao Animal Vinculado, exceto Treinamentos de Espécie.', bullets: ['O animal precisa cumprir exigências normais do treinamento.', 'Quando necessário, usa Lidar com Animais CD 18 para iniciar o treinamento.'] },
+    ],
+  },
+  {
+    name: 'Arqueólogo',
+    specialSkill: 'História Perdida',
+    proficiencies: 'Ferramentas de Arqueólogo e perícias ligadas a pesquisa.',
+    items: 'Ferramentas de Arqueólogo e itens de estudo.',
+    details: [
+      { name: 'Poneglyphs', detail: 'Usa História Perdida para decifrar línguas antigas, transcrever inscrições e interpretar ruínas ou registros esquecidos.', bullets: ['O teste substitui perícias comuns quando a ação envolve exploração, tradução ou descobrimento.', 'A graduação melhora a segurança e eficiência da interpretação.'] },
+      { name: 'Tesouros Perdidos', detail: 'Permite identificar e buscar tesouros antigos, incluindo dials, armas meito, equipamentos engenhados e Akuma no Mi conforme as tabelas do PDF.', bullets: ['Graduações avançadas permitem repetir ou escolher resultados em rolagens de tesouro.', 'As ferramentas incluem livros, mapas, caderno, chicote e kit de escalada conforme a graduação.'] },
+    ],
+  },
+  {
+    name: 'Caçador de Recompensas',
+    specialSkill: 'Caça',
+    proficiencies: 'Ferramentas de Caçador de Recompensas e perícias de investigação/rastreamento.',
+    items: 'Itens de caçada e contratos.',
+    details: [
+      { name: 'Contratos Clandestinos', detail: 'Usa contatos no Governo Mundial, Marinha ou submundo para negociar recompensas de criminosos capturados.', bullets: ['Acordos iniciais pagam parte do valor original, especialmente para alvos vivos.', 'A graduação aumenta o percentual recebido pelos contratos.'] },
+      { name: 'Informações Confiáveis', detail: 'Pesquisa hábitos, rotinas, conexões, fraquezas, paradeiro e nível de ameaça de um alvo antes da caçada.', bullets: ['O tipo de alvo define CDs e intervalos para novos testes.', 'Pode exigir custo em bellys para subornos, presentes ou acesso a fontes.'] },
+      { name: 'Alvo Marcado', detail: 'Conhecimento único. Ao obter informações com Caça, marca uma criatura e recebe vantagens para rastrear, lembrar dados e se esconder dela.', bullets: ['Terreno difícil natural não atrapalha perseguições ao alvo marcado.', 'Graduações avançadas permitem manter mais alvos marcados.'] },
+    ],
+  },
+  {
+    name: 'Carpinteiro',
+    specialSkill: 'Carpintaria',
+    proficiencies: 'Ferramentas de Carpinteiro e perícias de construção.',
+    items: 'Ferramentas de Carpinteiro.',
+    details: [
+      { name: 'Conserto em Madeira', detail: 'Repara danos de embarcações com tempo e custo definidos pelo estado do navio, usando madeira adequada para navegação.', bullets: ['Também cobre criação de embarcações, cômodos, velas e mastros.', 'Graduações reduzem custos e podem melhorar velocidade e CR da embarcação.'] },
+      { name: 'Confecção Rápida', detail: 'Com madeira disponível, cria estruturas simples em combate ou exploração, como chão, escada, parede e cobertura.', bullets: ['A cada ação ou 6 segundos constrói 1,5 m² de estrutura.', 'Cada trecho possui CR 10 e 10 PV por 1,5 m².'] },
+      { name: 'Reparo Emergencial', detail: 'Faz reparos temporários em navios durante ou após batalha com Carpintaria CD 15.', bullets: ['O reparo dura 2 minutos e recupera 5d10+10 PV inicialmente.', 'PV recuperado é temporário e se perde após alguns dias se o navio não for consertado de verdade.'] },
+      { name: 'Corpo de Construtor', detail: 'Conhecimento único. O trabalho bruto adapta o corpo do carpinteiro para equilíbrio, carga e esforço prolongado.', bullets: ['Recebe bônus em equilíbrio e vantagem em Força (Atletismo).', 'Dobra capacidade de carga e pode resistir a exaustão com Salvaguarda de Constituição.'] },
+    ],
+  },
+  {
+    name: 'Combatente',
+    specialSkill: 'Noção de Batalha',
+    proficiencies: 'Perícias de análise, comando e combate.',
+    items: 'Itens de combate e ferramentas pertinentes.',
+    details: [
+      { name: 'Comando Rápido', detail: 'Usa reação para instruir aliados visíveis durante o combate com comandos táticos.', bullets: ['Ajuda concede vantagem em ataque.', 'Alerta aumenta a CR do aliado contra um ataque.', 'Dica adiciona dano se o ataque acertar.'] },
+      { name: 'Avaliação', detail: 'Analisa uma criatura com Noção de Batalha para descobrir informações úteis sobre ameaça, vulnerabilidades e capacidades.', bullets: ['A CD base usa 16 + modificador de Presença do alvo.', 'Graduações altas permitem obter informações adicionais.'] },
+      { name: 'Conhecimento de Combate', detail: 'Antes da iniciativa, faz Noção de Batalha CD 15 para preparar aliados até o fim do encontro.', bullets: ['Pode melhorar iniciativa, impedir surpresa, conceder PV temporários e reduzir dano.', 'Uso recupera no término de descanso longo.'] },
+    ],
+  },
+  {
+    name: 'Cozinheiro',
+    specialSkill: 'Gastronomia',
+    proficiencies: 'Ferramentas de Cozinheiro; escolha 2 entre Atuação, Intuição, Persuasão, Prestidigitação, Provocação e Sobrevivência.',
+    items: 'Ferramentas de Cozinheiro e mochila pequena.',
+    details: [
+      { name: 'Refeição do Chef', detail: 'Prepara refeições especiais que oferecem benefícios diários aos personagens alimentados.', bullets: ['As opções incluem efeitos de recuperação, energia e suporte durante descansos.', 'O preparo consome temperos e alimentos em bellys por prato.'] },
+      { name: 'Nutrição Superior', detail: 'Depois de comer uma Refeição do Chef, uma vez por dia o personagem pode recuperar PV igual ao dobro do nível.', bullets: ['Também pode evitar queda inconsciente uma vez por descanso longo, voltando a 1 PV.', 'A graduação melhora a quantidade de benefícios escolhidos.'] },
+      { name: 'Preparo Perfeito', detail: 'Conhecimento único. Eleva a refeição a um nível excepcional, permitindo benefícios ativos até o próximo descanso longo.', bullets: ['Pode conceder bônus temporário de CR e outros efeitos escolhidos no início do turno.', 'Graduações superiores aumentam quantas vezes cada criatura pode escolher benefícios.'] },
+    ],
+  },
+  {
+    name: 'Engenheiro',
+    specialSkill: 'Engenharia',
+    proficiencies: 'Ferramentas de Engenheiro e perícias de tecnologia/construção.',
+    items: 'Ferramentas e materiais de engenhoca.',
+    details: [
+      { name: 'Aprimorar Equipamento', detail: 'Usa Engenharia para melhorar armas e equipamentos, aumentando alcance, acerto ou propriedades especiais.', bullets: ['CD 14 para melhorias simples de armas.', 'CD 17 para fio especial, Kairoseki ou revestimentos complexos.', 'Resultado 1 no d20 pode quebrar o item sem reparo.'] },
+      { name: 'Criar Engenhoca', detail: 'Constrói equipamentos engenhados usando dials, materiais, tempo e CD definidos em tabela.', bullets: ['Falha exige comprar materiais extras equivalentes a parte do custo total.', 'Inclui itens como Clima-Tact, Burn Bazooka e disparador de Pop Green.'] },
+      { name: 'Construir Robô', detail: 'Conhecimento único. Permite criar robôs Beta, Alpha ou Ômega com custos, manutenção e energia próprios.', bullets: ['O robô cumpre ordens simples e normalmente exige ação bônus para comando em combate.', 'Reparos e perda de funcionamento usam testes de Engenharia e custos conforme dano.'] },
+    ],
+  },
+  {
+    name: 'Médico',
+    specialSkill: 'Medicina',
+    proficiencies: 'Ferramentas de Médico e perícias ligadas a tratamento.',
+    items: 'Ferramentas de Médico e suprimentos.',
+    details: [
+      { name: 'Controle de Doenças', detail: 'Usa Medicina para diagnosticar, tratar e reduzir efeitos de doenças, venenos ou condições clínicas.', bullets: ['Tratamentos podem exigir dias, custos e ferramentas adequadas.', 'A graduação melhora a segurança e eficiência do cuidado.'] },
+      { name: 'Tratar Ferimentos', detail: 'Realiza cuidados médicos e cirurgias para recuperar PV e tratar ferimentos persistentes.', bullets: ['Feridas graves usam CD e tempo de cirurgia conforme gravidade.', 'A CD pode ser modificada pela Constituição do paciente e pelo atraso no tratamento.'] },
+      { name: 'Tratar Doenças', detail: 'Cria ou aplica tratamentos para doenças com tempo e custo definidos pelo Narrador e pela gravidade.', bullets: ['O PDF relaciona custos, duração e efeitos conforme o quadro clínico.', 'Ferramentas médicas apropriadas são necessárias para tratamentos complexos.'] },
+      { name: 'Paramedicina', detail: 'Conhecimento único. Com ação bônus, faz Medicina CD 17 para tratar criatura inconsciente com 0 PV.', bullets: ['Mesmo em falha, pode encerrar condições como Letárgico, Queimado, Sangramento e Sonolento quando aplicável.', 'Em sucesso, protege a vida da criatura e estabiliza o atendimento emergencial.'] },
+    ],
+  },
+  {
+    name: 'Músico',
+    specialSkill: 'Canção',
+    proficiencies: 'Instrumentos musicais e perícias performáticas.',
+    items: 'Instrumento e ferramentas de músico.',
+    details: [
+      { name: 'Alma de Artista', detail: 'Representa treino musical intenso e presença artística, fortalecendo apresentações e reações emocionais do público.', bullets: ['Pode interagir com testes sociais e apresentações musicais.', 'Alguns usos recuperam no término de descanso longo.'] },
+      { name: 'Confusão', detail: 'Parte do repertório encantador. A música perturba emoções e pode gerar comportamentos aleatórios em criaturas afetadas.', bullets: ['Usa efeitos definidos por tabela d10 no PDF.', 'A quantidade de usos se relaciona ao bônus de proficiência.'] },
+      { name: 'Espetáculo', detail: 'Com uma ação no início do turno, performa música que atrai ou repele criaturas escolhidas no alcance.', bullets: ['Criaturas afetadas podem ser forçadas a se aproximar, afastar ou permanecer sob a influência.', 'Ferimentos podem permitir novo teste para encerrar o efeito.'] },
+      { name: 'Showman', detail: 'Conhecimento único. Ganha Pontos de Audiência conforme criaturas assistem à performance.', bullets: ['Os pontos duram até o início da próxima semana.', 'Podem alimentar benefícios sociais e performáticos do músico.'] },
+    ],
+  },
+  {
+    name: 'Navegador',
+    specialSkill: 'Navegação',
+    proficiencies: 'Ferramentas de Navegador e perícias de orientação.',
+    items: 'Ferramentas de Navegador.',
+    details: [
+      { name: 'Sempre Informado', detail: 'Mantém jornais, rumores e conhecimento de mundo para guiar o grupo em terra e no mar.', bullets: ['Navegação CD 16 identifica figuras importantes e seus feitos públicos.', 'Pode intermediar compras com desconto, melhorando com graduação.'] },
+      { name: 'Previsão Marítima', detail: 'Antes de viajar, observa clima, vento, aves e fenômenos para prever perigos marítimos.', bullets: ['Com sucesso, a viagem atrasa 1d4 dias, mas os testes de Navegação durante o período recebem sucessos automáticos.', 'CDs variam por mar: Blues 10, Paradise 14, Novo Mundo 16, outros mares 12.'] },
+      { name: 'Navegação', detail: 'Testes de Navegação ocorrem em alto mar para evitar perigos climáticos, inimigos e falhas de rota.', bullets: ['Pode despistar ameaças como ataque pirata, frota da Marinha ou Rei dos Mares com teste contra a CD do mar.', 'Contra maremoto, redemoinho ou tufão, pode reduzir dano pela metade; Mestre pode trocar um resultado de desastre na viagem.'] },
+      { name: 'Criar Mapa', detail: 'Desenha mapas astronômicos e marítimos de regiões navegadas para facilitar viagens futuras.', bullets: ['Com mapa da região, a duração da viagem é reduzida pela metade.', 'Não é necessário repetir testes de Navegação nessa rota, recebendo sucessos automáticos.'] },
+      { name: 'Mente Afiada', detail: 'Conhecimento único. A experiência do navegador aprimora memória, orientação e leitura de caminho.', bullets: ['Aumenta Sabedoria em +2 e eleva o máximo desse atributo por características para 26.', 'Sempre sabe o Norte, horas até nascer/pôr do sol e lembra com precisão do que viu ou ouviu nos últimos 30 dias.'] },
+    ],
+  },
+  {
+    name: 'Timoneiro',
+    specialSkill: 'Pilotagem de Embarcação',
+    proficiencies: 'Ferramentas e perícias de condução marítima.',
+    items: 'Ferramentas de timoneiro.',
+    details: [
+      { name: 'Combate Marítimo', detail: 'Opera o timão durante encontros navais e usa manobras especiais até 5 vezes por dia.', bullets: ['Inclui Cavalgar Correntes, Investida, Impulso e Surf Naval.', 'Investida usa Navegação contra CR do alvo e reduz dano sofrido pelo próprio navio.'] },
+      { name: 'Manobrar Desastres Naturais', detail: 'Quando falha em Navegação contra maremoto, redemoinho ou tufão, testa Navegação contra a CD do mar para reduzir dano.', bullets: ['Como navegador mestre, reduz dano mesmo em falha e anula dano em sucesso.'] },
+      { name: 'Braço de Timoneiro', detail: 'Representa treino físico de controlar velas, cordas e timão sob pressão.', bullets: ['Favorece testes físicos ligados à condução e manobra do navio.', 'Funciona como opção de subprofissão para Navegadores conforme o PDF.'] },
+    ],
+  },
 ]
 
 export const basicAbilities = [

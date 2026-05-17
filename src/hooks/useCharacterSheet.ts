@@ -70,20 +70,20 @@ export function useCharacterSheet() {
   function updateSkills(nextSkills: string[]) {
     if (selectionsLocked) return
     setSheet((current) => ({ ...current, proficientSkills: nextSkills }))
-    setNotice(nextSkills.length ? 'Perícias atualizadas.' : 'Todas as perícias foram desmarcadas.')
+    setNotice(nextSkills.length ?'Perícias atualizadas.' : 'Todas as perícias foram desmarcadas.')
   }
 
   function requestLockToggle() {
     const willLock = !selectionsLocked
     setConfirmation({
-      title: willLock ? 'Travar escolhas?' : 'Destravar escolhas?',
+      title: willLock ?'Travar escolhas?' : 'Destravar escolhas?',
       body: willLock
-        ? 'Espécie, estilo, profissão, perícias, defesa e itens selecionados ficarão protegidos contra mudanças acidentais.'
+        ?'Espécie, estilo, profissão, perícias, defesa e itens selecionados ficarão protegidos contra mudanças acidentais.'
         : 'As escolhas estruturais voltarão a aceitar edição, remoção e desseleção.',
-      confirmLabel: willLock ? 'Travar ficha' : 'Destravar ficha',
+      confirmLabel: willLock ?'Travar ficha' : 'Destravar ficha',
       onConfirm: () => {
         setSelectionsLocked(willLock)
-        setNotice(willLock ? 'Escolhas travadas.' : 'Escolhas destravadas.')
+        setNotice(willLock ?'Escolhas travadas.' : 'Escolhas destravadas.')
       },
     })
   }
@@ -126,8 +126,8 @@ export function useCharacterSheet() {
       return {
         ...current,
         inventoryEntries: existing
-          ? current.inventoryEntries.map((entry) =>
-              entry.itemName === itemName ? { ...entry, quantity: entry.quantity + 1 } : entry,
+          ?current.inventoryEntries.map((entry) =>
+              entry.itemName === itemName ?{ ...entry, quantity: entry.quantity + 1 } : entry,
             )
           : [...current.inventoryEntries, { itemName, quantity: 1 }],
       }
@@ -142,7 +142,7 @@ export function useCharacterSheet() {
       inventoryEntries: current.inventoryEntries
         .map((entry) =>
           entry.itemName === itemName
-            ? { ...entry, quantity: Math.max(0, entry.quantity + delta) }
+            ?{ ...entry, quantity: Math.max(0, entry.quantity + delta) }
             : entry,
         )
         .filter((entry) => entry.quantity > 0),
@@ -187,7 +187,7 @@ export function useCharacterSheet() {
     confirmAction,
     cancelConfirmation: () => setConfirmation(null),
     openCover: () => setCoverOpened(true),
-    toggleTheme: () => setTheme((current) => (current === 'light' ? 'dark' : 'light')),
+    toggleTheme: () => setTheme((current) => (current === 'light' ?'dark' : 'light')),
     setSpecies,
     setStyle,
     setVariant,

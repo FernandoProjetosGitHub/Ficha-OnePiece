@@ -49,3 +49,23 @@ export function InfoList({ items }: { items: string[] }) {
     </ul>
   )
 }
+
+type ExpandableInfoItem = {
+  name: string
+  detail: string
+  bullets?: string[]
+}
+
+export function ExpandableInfoList({ items }: { items: ExpandableInfoItem[] }) {
+  return (
+    <div className="nested-detail-list">
+      {items.map((item) => (
+        <details className="nested-detail" key={item.name}>
+          <summary>{item.name}</summary>
+          <p>{item.detail}</p>
+          {item.bullets && <InfoList items={item.bullets} />}
+        </details>
+      ))}
+    </div>
+  )
+}

@@ -3,7 +3,6 @@ import {
   Anchor,
   BookOpen,
   CheckCircle2,
-  ChevronRight,
   Dice6,
   HeartPulse,
   Image as ImageIcon,
@@ -20,9 +19,10 @@ import {
   Unlock,
   UserRound,
 } from 'lucide-react'
+import { ChoiceSelect, MultiChoiceSelect } from './components/ChoiceSelect'
 import { DetailsCard } from './components/DetailsCard'
 import { Field, TextAreaField } from './components/Field'
-import { MultiOptionButtons, OptionButtons } from './components/OptionButtons'
+import { InfoList, MiniCalc, Panel, Stat } from './components/SheetPrimitives'
 import {
   attributes,
   basicAbilities,
@@ -143,6 +143,7 @@ const initialSheet: Sheet = {
 }
 
 function App() {
+  // Estado unico da ficha: facilita salvar, exportar ou sincronizar tudo depois.
   const [sheet, setSheet] = useState<Sheet>(initialSheet)
   const [theme, setTheme] = useState<Theme>('light')
   const [coverState, setCoverState] = useState<'closed' | 'opening' | 'opened'>('closed')
@@ -163,6 +164,7 @@ function App() {
     [sheet.professionName],
   )
 
+  // Valores derivados ficam em memo/const para a UI sempre refletir as regras atuais da ficha.
   const level = Math.min(20, Math.max(1, Number(sheet.level) || 1))
   const proficiency = proficiencyBonus(level)
   const maxPp = powerPoints(level)
@@ -190,18 +192,10 @@ function App() {
     }))
   }
 
-  function toggleSkill(skillName: string) {
+  function updateSkills(nextSkills: string[]) {
     if (selectionsLocked) return
-    setSheet((current) => {
-      const active = current.proficientSkills.includes(skillName)
-      return {
-        ...current,
-        proficientSkills: active
-          ? current.proficientSkills.filter((item) => item !== skillName)
-          : [...current.proficientSkills, skillName],
-      }
-    })
-    setNotice('Perícias atualizadas.')
+    setSheet((current) => ({ ...current, proficientSkills: nextSkills }))
+    setNotice(nextSkills.length ? 'Perícias atualizadas.' : 'Todas as perícias foram desmarcadas.')
   }
 
   function requestLockToggle() {
@@ -282,7 +276,7 @@ function App() {
   function openCover() {
     if (coverState !== 'closed') return
     setCoverState('opening')
-    window.setTimeout(() => setCoverState('opened'), 820)
+    window.setTimeout(() => setCoverState('opened'), 1080)
   }
 
   return (
@@ -357,121 +351,146 @@ function App() {
 
       <section className="sheet-grid">
         <Panel title="Identidade" icon={<UserRound />}>
-          <div className="form-grid">
+          <div className="section-block">
+            <h3>Apresentação</h3>
+            <div className="form-grid">
             <Field label="Nome" value={sheet.name} onChange={(event) => updateSheet('name', event.target.value)} />
             <Field label="Epíteto" value={sheet.epithet} onChange={(event) => updateSheet('epithet', event.target.value)} />
             <Field label="Conceito original" value={sheet.concept} onChange={(event) => updateSheet('concept', event.target.value)} />
             <Field label="Origem" value={sheet.origin} onChange={(event) => updateSheet('origin', event.target.value)} />
+            </div>
+          </div>
+          <div className="section-block">
+            <h3>Motivações</h3>
+            <div className="form-grid">
             <Field label="Sonho" value={sheet.dream} onChange={(event) => updateSheet('dream', event.target.value)} />
             <Field label="Caminho" value={sheet.path} onChange={(event) => updateSheet('path', event.target.value)} />
-            <Field label="URL da imagem/GIF" value={sheet.portraitUrl} onChange={(event) => updateSheet('portraitUrl', event.target.value)} placeholder="https://...gif, .png, .webp ou .jpg" />
             <TextAreaField label="Antecedente e história" value={sheet.background} onChange={(event) => updateSheet('background', event.target.value)} />
+            </div>
+          </div>
+          <div className="section-block">
+            <h3>Retrato</h3>
+            <div className="form-grid">
+            <Field label="URL da imagem/GIF" value={sheet.portraitUrl} onChange={(event) => updateSheet('portraitUrl', event.target.value)} placeholder="https://...gif, .png, .webp ou .jpg" />
+            </div>
           </div>
         </Panel>
 
         <Panel title="Criação" icon={<BookOpen />}>
-          <OptionButtons
-            disabled={selectionsLocked}
-            label="Espécie"
-            onChange={setSpecies}
-            options={species.map((item) => ({ value: item.name, label: item.name, detail: `${item.hpBase} PV base` }))}
-            value={sheet.speciesName}
-          />
-
-          <OptionButtons
-            disabled={selectionsLocked}
-            label="Variante, ancestralidade ou traço"
-            onChange={(value) => {
-              updateSheet('variant', value)
-              setNotice(`Variação definida: ${value}.`)
-            }}
-            options={selectedSpecies.variants.map((variant) => {
-              const [label, detail] = variant.split(': ')
-              return { value: variant, label, detail }
-            })}
-            value={sheet.variant}
-          />
-
-          <div className="form-grid">
+          <div className="section-block">
+            <h3>Origem mecânica</h3>
+            <ChoiceSelect
+              disabled={selectionsLocked}
+              label="Espécie"
+              onChange={setSpecies}
+              options={species.map((item) => ({ value: item.name, label: item.name, detail: `${item.hpBase} PV base` }))}
+              value={sheet.speciesName}
+            />
+            <ChoiceSelect
+              disabled={selectionsLocked}
+              label="Variante, ancestralidade ou traço"
+              onChange={(value) => {
+                updateSheet('variant', value)
+                setNotice(`Variação definida: ${value}.`)
+              }}
+              options={selectedSpecies.variants.map((variant) => {
+                const [label, detail] = variant.split(': ')
+                return { value: variant, label, detail }
+              })}
+              value={sheet.variant}
+            />
             <TextAreaField
               label="Complemento de variante / ancestralidade"
               value={sheet.variantNotes}
               onChange={(event) => updateSheet('variantNotes', event.target.value)}
               placeholder="Use para animal ancestral, falha humana, duas espécies de mestiço ou aprovação do Narrador."
             />
+            <DetailsCard title="Detalhes da variante selecionada" eyebrow="Escolha atual">
+              <InfoList items={[
+                sheet.variant || 'Nenhuma variante selecionada.',
+                sheet.variantNotes ? `Complemento anotado: ${sheet.variantNotes}` : 'Use o complemento para registrar aprovação do Narrador, origem dupla ou traço cultural.',
+              ]} />
+            </DetailsCard>
           </div>
 
-          <OptionButtons
-            disabled={selectionsLocked}
-            label="Estilo de combate"
-            onChange={setStyle}
-            options={combatStyles.map((item) => ({ value: item.name, label: item.name, detail: `${item.category} · d${item.hitDie}` }))}
-            value={sheet.styleName}
-          />
-
-          <OptionButtons
-            disabled={selectionsLocked}
-            label="Atributo primário"
-            onChange={(value) => updateSheet('primary', value as AttributeKey)}
-            options={selectedStyle.primary.map((key) => ({ value: key, label: attributes[key] }))}
-            value={sheet.primary}
-          />
-
-          <OptionButtons
-            disabled={selectionsLocked}
-            label="Profissão"
-            onChange={(value) => {
-              updateSheet('professionName', value)
-              setNotice(`Profissão definida: ${value}.`)
-            }}
-            options={professions.map((item) => ({ value: item.name, label: item.name, detail: item.specialSkill }))}
-            value={sheet.professionName}
-          />
-
-          <div className="form-grid">
-            <Field label="Nível" type="number" min={1} max={20} value={level} onChange={(event) => updateSheet('level', Number(event.target.value))} />
-            <Field label="Experiência" type="number" min={0} value={sheet.xp} onChange={(event) => updateSheet('xp', Number(event.target.value))} />
+          <div className="section-block">
+            <h3>Estilo, atributo e ofício</h3>
+            <ChoiceSelect
+              disabled={selectionsLocked}
+              label="Estilo de combate"
+              onChange={setStyle}
+              options={combatStyles.map((item) => ({ value: item.name, label: item.name, detail: `${item.category} · d${item.hitDie}` }))}
+              value={sheet.styleName}
+            />
+            <ChoiceSelect
+              disabled={selectionsLocked}
+              label="Atributo primário"
+              onChange={(value) => updateSheet('primary', value as AttributeKey)}
+              options={selectedStyle.primary.map((key) => ({ value: key, label: attributes[key] }))}
+              value={sheet.primary}
+            />
+            <ChoiceSelect
+              disabled={selectionsLocked}
+              label="Profissão"
+              onChange={(value) => {
+                updateSheet('professionName', value)
+                setNotice(`Profissão definida: ${value}.`)
+              }}
+              options={professions.map((item) => ({ value: item.name, label: item.name, detail: item.specialSkill }))}
+              value={sheet.professionName}
+            />
           </div>
 
-          <DetailsCard title={`Detalhes da espécie: ${selectedSpecies.name}`} eyebrow="PDF · Capítulo 2" open>
-            <InfoList items={[
-              `PV base: ${selectedSpecies.hpBase}`,
-              `Tamanho: ${selectedSpecies.size}`,
-              `Deslocamento: ${selectedSpecies.movement}; nado: ${selectedSpecies.swim}`,
-              `Preconceito: ${selectedSpecies.prejudice}`,
-              ...selectedSpecies.benefits.map((item) => `Benefício: ${item}`),
-              ...selectedSpecies.difficulties.map((item) => `Dificuldade: ${item}`),
-              ...selectedSpecies.variants.map((item) => `Variante: ${item}`),
-              ...selectedSpecies.notes,
-            ]} />
-          </DetailsCard>
+          <div className="section-block">
+            <h3>Progressão</h3>
+            <div className="form-grid">
+              <Field label="Nível" type="number" min={1} max={20} value={level} onChange={(event) => updateSheet('level', Number(event.target.value))} />
+              <Field label="Experiência" type="number" min={0} value={sheet.xp} onChange={(event) => updateSheet('xp', Number(event.target.value))} />
+            </div>
+          </div>
 
-          <DetailsCard title={`Detalhes do estilo: ${selectedStyle.name}`} eyebrow={selectedStyle.source}>
-            <InfoList items={[
-              `Categoria: ${selectedStyle.category}`,
-              `Dado de Vida: d${selectedStyle.hitDie}`,
-              `Salvaguardas: ${selectedStyle.saves.map((save) => attributes[save]).join(', ')}`,
-              `Armas/proficiências: ${selectedStyle.weapons}`,
-              `Perícias: ${selectedStyle.skillChoices}`,
-              `Arma favorita: ${selectedStyle.favoriteWeapon}`,
-              `HB inata: ${selectedStyle.innateBasics.join(' ou ')}`,
-              `Equipamentos: ${selectedStyle.equipment}`,
-              `CD das técnicas: ${selectedStyle.techniqueDc}`,
-              ...selectedStyle.features.map((feature) => `Característica: ${feature}`),
-            ]} />
-          </DetailsCard>
-
-          <DetailsCard title={`Detalhes da profissão: ${selectedProfession.name}`} eyebrow="PDF · Ofícios">
-            <InfoList items={[
-              `Perícia Especial do Ofício: ${selectedProfession.specialSkill}`,
-              `Proficiências: ${selectedProfession.proficiencies}`,
-              `Itens: ${selectedProfession.items}`,
-              ...selectedProfession.details.map((detail) => `Característica: ${detail}`),
-            ]} />
-          </DetailsCard>
+          <div className="section-block">
+            <h3>Regras relacionadas</h3>
+            <DetailsCard title={`Detalhes da espécie: ${selectedSpecies.name}`} eyebrow="PDF · Capítulo 2" open>
+              <InfoList items={[
+                `PV base: ${selectedSpecies.hpBase}`,
+                `Tamanho: ${selectedSpecies.size}`,
+                `Deslocamento: ${selectedSpecies.movement}; nado: ${selectedSpecies.swim}`,
+                `Preconceito: ${selectedSpecies.prejudice}`,
+                ...selectedSpecies.benefits.map((item) => `Benefício: ${item}`),
+                ...selectedSpecies.difficulties.map((item) => `Dificuldade: ${item}`),
+                ...selectedSpecies.variants.map((item) => `Variante: ${item}`),
+                ...selectedSpecies.notes,
+              ]} />
+            </DetailsCard>
+            <DetailsCard title={`Detalhes do estilo: ${selectedStyle.name}`} eyebrow={selectedStyle.source}>
+              <InfoList items={[
+                `Categoria: ${selectedStyle.category}`,
+                `Dado de Vida: d${selectedStyle.hitDie}`,
+                `Salvaguardas: ${selectedStyle.saves.map((save) => attributes[save]).join(', ')}`,
+                `Armas/proficiências: ${selectedStyle.weapons}`,
+                `Perícias: ${selectedStyle.skillChoices}`,
+                `Arma favorita: ${selectedStyle.favoriteWeapon}`,
+                `HB inata: ${selectedStyle.innateBasics.join(' ou ')}`,
+                `Equipamentos: ${selectedStyle.equipment}`,
+                `CD das técnicas: ${selectedStyle.techniqueDc}`,
+                ...selectedStyle.features.map((feature) => `Característica: ${feature}`),
+              ]} />
+            </DetailsCard>
+            <DetailsCard title={`Detalhes da profissão: ${selectedProfession.name}`} eyebrow="PDF · Ofícios">
+              <InfoList items={[
+                `Perícia Especial do Ofício: ${selectedProfession.specialSkill}`,
+                `Proficiências: ${selectedProfession.proficiencies}`,
+                `Itens: ${selectedProfession.items}`,
+                ...selectedProfession.details.map((detail) => `Característica: ${detail}`),
+              ]} />
+            </DetailsCard>
+          </div>
         </Panel>
 
         <Panel title="Atributos e Recursos" icon={<Swords />}>
+          <div className="section-block">
+            <h3>Atributos base</h3>
           <div className="attribute-grid">
             {(Object.keys(attributes) as AttributeKey[]).map((key) => {
               const score = sheet.attributes[key]
@@ -484,7 +503,10 @@ function App() {
               )
             })}
           </div>
+          </div>
 
+          <div className="section-block">
+            <h3>Recursos em jogo</h3>
           <div className="form-grid compact">
             <Field label="PV atual" type="number" value={sheet.currentHp} onChange={(event) => updateSheet('currentHp', Number(event.target.value))} />
             <Field label="PV temporário" type="number" value={sheet.temporaryHp} onChange={(event) => updateSheet('temporaryHp', Number(event.target.value))} />
@@ -492,7 +514,7 @@ function App() {
             <Field label="Exaustão" type="number" min={0} max={6} value={sheet.exhaustion} onChange={(event) => updateSheet('exhaustion', Number(event.target.value))} />
           </div>
 
-          <OptionButtons
+          <ChoiceSelect
             disabled={selectionsLocked}
             label="Defesa"
             onChange={(value) => updateSheet('defenseMode', value as Sheet['defenseMode'])}
@@ -502,7 +524,10 @@ function App() {
             ]}
             value={sheet.defenseMode}
           />
+          </div>
 
+          <div className="section-block">
+            <h3>Cálculos derivados</h3>
           <div className="derived-grid">
             <MiniCalc label="Ataque favorito" value={formatModifier(attack)} />
             <MiniCalc label="CD técnica" value={techniqueCd} />
@@ -511,7 +536,10 @@ function App() {
             <MiniCalc label="Arrastar/levantar" value={`${carry.drag} kg`} />
             <MiniCalc label="Sobrecarga" value={`${carry.overload}/${carry.heavyOverload} kg`} />
           </div>
+          </div>
 
+          <div className="section-block">
+            <h3>Regras de consulta</h3>
           <DetailsCard title="Detalhes das regras de cálculo" eyebrow="PV · PP · CR · Exaustão">
             <InfoList items={[
               'Modificador de atributo: subtraia 10, divida por 2 e arredonde para baixo.',
@@ -522,16 +550,23 @@ function App() {
               'Exaustão reduz testes d20 em 2 por nível e deslocamento em 1,5 m por nível; 6º nível causa desmaio.',
             ]} />
           </DetailsCard>
+          </div>
         </Panel>
 
         <Panel title="Perícias" icon={<Dice6 />}>
-          <MultiOptionButtons
+          <div className="section-block">
+            <h3>Escolhas de proficiência</h3>
+          <MultiChoiceSelect
             disabled={selectionsLocked}
             label="Proficiências marcadas"
-            onToggle={toggleSkill}
+            onChange={updateSkills}
             options={skills.map((skill) => ({ value: skill.name, label: skill.name, detail: attributes[skill.attribute] }))}
             values={sheet.proficientSkills}
+            helper="Segure Ctrl no computador para escolher várias; no celular, use a lista do sistema."
           />
+          </div>
+          <div className="section-block">
+            <h3>Totais e detalhes</h3>
           <div className="skills-list">
             {skills.map((skill) => {
               const proficient = sheet.proficientSkills.includes(skill.name)
@@ -547,9 +582,12 @@ function App() {
               )
             })}
           </div>
+          </div>
         </Panel>
 
         <Panel title="Habilidades e Técnicas" icon={<Sparkles />}>
+          <div className="section-block">
+            <h3>Habilidades básicas</h3>
           <DetailsCard title="Habilidades Básicas disponíveis" eyebrow="HB gerais e categorias">
             <div className="ability-list">
               {basicAbilities.map((ability) => (
@@ -560,32 +598,50 @@ function App() {
               ))}
             </div>
           </DetailsCard>
+          </div>
 
+          <div className="section-block">
+            <h3>Técnicas por nível</h3>
           <DetailsCard title={`Técnicas do estilo: ${selectedStyle.name}`} eyebrow="Progressão por nível" open>
             <div className="technique-list">
               {selectedStyle.techniques.map((technique) => (
-                <article key={`${technique.level}-${technique.combat}`}>
-                  <span>{technique.level}º nível · {technique.grade} grau</span>
-                  <strong>{technique.combat}</strong>
+                <details className="choice-detail-card" key={`${technique.level}-${technique.combat}`}>
+                  <summary>
+                    <span>{technique.level}º nível · {technique.grade} grau</span>
+                    <strong>{technique.combat}</strong>
+                  </summary>
+                  <p>
+                    Técnica do estilo {selectedStyle.name}. Use a CD atual {techniqueCd} quando a técnica exigir
+                    Salvaguarda e registre custo, alcance e dano no campo editável abaixo.
+                  </p>
                   {technique.auxiliary && <small>Auxiliar: {technique.auxiliary}</small>}
-                </article>
+                </details>
               ))}
             </div>
           </DetailsCard>
+          </div>
 
+          <div className="section-block">
+            <h3>Anotações editáveis</h3>
           <TextAreaField label="Habilidades escolhidas, características e usos" value={sheet.abilities} onChange={(event) => updateSheet('abilities', event.target.value)} placeholder="Ex.: Corpo de Guerreiro, Adaptação, Aspectos Humanos, usos por descanso..." />
           <TextAreaField label="Técnicas editadas / personalizadas" value={sheet.techniques} onChange={(event) => updateSheet('techniques', event.target.value)} placeholder="Registre custo em PP, duração, alcance, requisito, dano e Ataque Combinado." />
           <TextAreaField label="Haki" value={sheet.haki} onChange={(event) => updateSheet('haki', event.target.value)} placeholder="Aptidões, Pontos de Ambição, observação, armamento, rei..." />
           <TextAreaField label="Akuma no Mi / poder sobrenatural" value={sheet.akuma} onChange={(event) => updateSheet('akuma', event.target.value)} placeholder="Tipo, nome, traços, técnicas criadas, limitações e fraquezas." />
+          </div>
         </Panel>
 
         <Panel title="Inventário e Biblioteca" icon={<PackageCheck />}>
+          <div className="section-block">
+            <h3>Resumo de carga</h3>
           <div className="inventory-summary">
             <MiniCalc label="Slots auxiliares" value={registeredSlots.toFixed(1)} />
             <MiniCalc label="Capacidade pessoal" value={`${carry.load} kg`} />
           </div>
+          </div>
 
-          <OptionButtons
+          <div className="section-block">
+            <h3>Catálogo de itens</h3>
+          <ChoiceSelect
             disabled={selectionsLocked}
             label="Categoria de item"
             onChange={(value) => updateSheet('itemCategory', value)}
@@ -596,19 +652,24 @@ function App() {
           <div className="item-picker">
             {filteredItems.map((item) => (
               <article className="item-card" key={item.name}>
-                <div>
-                  <strong>{item.name}</strong>
-                  <span>{item.rarity} · {item.cost}</span>
+                <details className="choice-detail-card">
+                  <summary>
+                    <span>{item.rarity} · {item.cost}</span>
+                    <strong>{item.name}</strong>
+                  </summary>
                   <p>{item.detail}</p>
                   <small>{item.capacity ? `Capacidade: ${item.capacity}` : `Slots auxiliares: ${item.load}`}</small>
-                </div>
+                </details>
                 <button disabled={selectionsLocked} onClick={() => addItem(item.name)} type="button">
                   <Plus size={18} />Adicionar
                 </button>
               </article>
             ))}
           </div>
+          </div>
 
+          <div className="section-block">
+            <h3>Itens na ficha</h3>
           <DetailsCard title="Itens selecionados" eyebrow="Pode remover quando destravado" open>
             <div className="inventory-list">
               {sheet.inventoryEntries.length === 0 && <p className="empty-copy">Nenhum item selecionado.</p>}
@@ -630,10 +691,16 @@ function App() {
               })}
             </div>
           </DetailsCard>
+          </div>
 
+          <div className="section-block">
+            <h3>Anotações livres</h3>
           <TextAreaField label="Inventário livre, Bellys e equipamentos narrativos" value={sheet.inventory} onChange={(event) => updateSheet('inventory', event.target.value)} />
           <TextAreaField label="Notas da mesa" value={sheet.notes} onChange={(event) => updateSheet('notes', event.target.value)} />
+          </div>
 
+          <div className="section-block">
+            <h3>Fontes</h3>
           <DetailsCard title="Referências dos PDFs usados" eyebrow="Arquivos locais">
             <InfoList items={[
               'OP RPG - Livro do Jogador 1.5.7.pdf: criação, espécies, estilos principais, profissões, atributos, perícias, técnicas, condições, equipamentos e aventura.',
@@ -641,6 +708,7 @@ function App() {
               'A ficha usa capacidade em kg quando o PDF informa recipientes, montarias ou veículos. Itens sem peso explícito usam slots auxiliares apenas para organização.',
             ]} />
           </DetailsCard>
+          </div>
         </Panel>
       </section>
 
@@ -657,47 +725,6 @@ function App() {
         </div>
       )}
     </main>
-  )
-}
-
-function Panel({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
-  return (
-    <section className="panel">
-      <h2>{icon}<span>{title}</span></h2>
-      {children}
-    </section>
-  )
-}
-
-function Stat({ icon, label, value, hint }: { icon: React.ReactNode; label: string; value: React.ReactNode; hint: string }) {
-  return (
-    <article className="stat">
-      <span className="stat-icon">{icon}</span>
-      <div>
-        <small>{label}</small>
-        <strong>{value}</strong>
-        <span>{hint}</span>
-      </div>
-    </article>
-  )
-}
-
-function MiniCalc({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <article className="mini-calc">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </article>
-  )
-}
-
-function InfoList({ items }: { items: string[] }) {
-  return (
-    <ul className="info-list">
-      {items.map((item) => (
-        <li key={item}><ChevronRight size={15} />{item}</li>
-      ))}
-    </ul>
   )
 }
 

@@ -33,7 +33,7 @@ export function AppShell({ children }: AppShellProps) {
         <Box component="aside" sx={{ borderRight: { md: 1 }, borderColor: 'divider', p: 2 }}>
           <Stack spacing={2}>
             <Box>
-              <Typography variant="h1">Marvis</Typography>
+              <Typography variant="h1">Blue</Typography>
               <Typography color="text.secondary">Assistente pessoal modular</Typography>
             </Box>
 

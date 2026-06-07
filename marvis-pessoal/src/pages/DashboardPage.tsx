@@ -1,4 +1,3 @@
-import FolderIcon from '@mui/icons-material/Folder';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import MemoryIcon from '@mui/icons-material/Memory';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
@@ -7,13 +6,9 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ChatPanel } from '../features/chat/ChatPanel';
+import { ProjectsPanel } from '../features/projects/ProjectsPanel';
 
 const modules = [
-  {
-    title: 'Projetos',
-    description: 'Organizar RPG Westeros, Controle de Emprestimos, Estudos React e outros contextos.',
-    icon: <FolderIcon />
-  },
   {
     title: 'Tarefas',
     description: 'Criar, editar, concluir e priorizar atividades por projeto.',
@@ -35,6 +30,8 @@ export function DashboardPage() {
   return (
     <Stack spacing={3}>
       <ChatPanel />
+
+      <ProjectsPanel />
 
       <Grid container spacing={2}>
         {modules.map((module) => (

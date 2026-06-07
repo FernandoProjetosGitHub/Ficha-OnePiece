@@ -39,7 +39,7 @@ async function createAssistantReply(content: string) {
       {
         role: 'system',
         content:
-          'Voce e Marvis, um assistente pessoal objetivo, organizado e didatico. Responda em portugues do Brasil.'
+          'Voce e Blue, um assistente pessoal objetivo, organizado e didatico. Responda em portugues do Brasil.'
       },
       {
         role: 'user',

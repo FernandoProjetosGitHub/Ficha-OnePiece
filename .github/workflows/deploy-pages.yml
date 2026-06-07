@@ -36,18 +36,18 @@ jobs:
       - name: Build root project
         run: npm run build
 
-      - name: Install Marvis dependencies
+      - name: Install Blue dependencies
         working-directory: marvis-pessoal
         run: npm ci
 
-      - name: Build Marvis
+      - name: Build Blue
         working-directory: marvis-pessoal
         run: npm run build
 
-      - name: Add Marvis to Pages artifact
+      - name: Add Blue to Pages artifact
         run: |
-          mkdir -p dist/marvis-pessoal
-          cp -R marvis-pessoal/dist/* dist/marvis-pessoal/
+          mkdir -p dist/blue-pessoal
+          cp -R marvis-pessoal/dist/* dist/blue-pessoal/
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4

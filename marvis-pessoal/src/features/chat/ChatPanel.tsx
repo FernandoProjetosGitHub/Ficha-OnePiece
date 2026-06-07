@@ -41,7 +41,7 @@ export function ChatPanel() {
       <Stack spacing={2}>
         <Box>
           <Typography variant="h2">Chat</Typography>
-          <Typography color="text.secondary">Converse com o Marvis e mantenha o historico salvo.</Typography>
+          <Typography color="text.secondary">Converse com o Blue e mantenha o historico salvo.</Typography>
         </Box>
 
         <Stack spacing={1} sx={{ minHeight: 280 }}>

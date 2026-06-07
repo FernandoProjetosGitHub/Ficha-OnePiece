@@ -42,6 +42,7 @@ export async function getDatabase() {
       name TEXT NOT NULL,
       description TEXT NOT NULL,
       notes TEXT NOT NULL,
+      history TEXT NOT NULL DEFAULT '',
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
@@ -66,6 +67,12 @@ export async function getDatabase() {
       updated_at TEXT NOT NULL
     );
   `);
+
+  const projectColumns = await database.all<{ name: string }[]>('PRAGMA table_info(projects)');
+
+  if (!projectColumns.some((column) => column.name === 'history')) {
+    await database.exec("ALTER TABLE projects ADD COLUMN history TEXT NOT NULL DEFAULT ''");
+  }
 
   return database;
 }

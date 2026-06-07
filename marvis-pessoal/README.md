@@ -1,6 +1,6 @@
-# Marvis Pessoal
+# Blue Pessoal
 
-Marvis e um assistente pessoal inspirado no Jarvis, construido de forma incremental para aprender arquitetura, frontend, backend, banco de dados e integracao com IA.
+Blue e um assistente pessoal inspirado no Jarvis, construido de forma incremental para aprender arquitetura, frontend, backend, banco de dados e integracao com IA.
 
 ## Stack
 
@@ -33,6 +33,10 @@ npm run dev
 Frontend: `http://localhost:5174`
 
 Backend: `http://localhost:3333`
+
+## Projeto de teste
+
+O primeiro contexto de teste e o projeto `Game of Thrones`. Ele serve para validar como o Blue organiza notas, historico, tarefas e conversas antes de implementarmos funcionalidades maiores.
 
 ## Arquitetura
 

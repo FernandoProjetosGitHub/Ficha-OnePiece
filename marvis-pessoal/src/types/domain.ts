@@ -31,6 +31,7 @@ export interface Project {
   name: string;
   description: string;
   notes: string;
+  history: string;
   createdAt: string;
   updatedAt: string;
 }
